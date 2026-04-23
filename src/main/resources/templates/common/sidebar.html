@@ -13,8 +13,8 @@
         <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/products}">
             Ürünler
         </a>
-        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action disabled" href="#">
-            Bayiler (yakında)
+        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/dealers}">
+            Bayiler
         </a>
 
         <div class="mt-3 small text-secondary" sec:authorize="hasRole('BAYI')">Bayi</div>

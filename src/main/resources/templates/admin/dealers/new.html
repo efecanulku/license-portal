@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Yeni Bayi</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Yeni Bayi', content=~{::content})}">
+    <div th:fragment="content">
+        <h1 class="h4 mb-3">Yeni Bayi</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/admin/dealers}" method="post" th:object="${form}">
+                    <div th:replace="~{admin/dealers/_form :: dealerForm(form=${form}, submitLabel='Oluştur')}"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

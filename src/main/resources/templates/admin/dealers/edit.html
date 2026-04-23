@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Bayi Düzenle</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Bayi Düzenle', content=~{::content})}">
+    <div th:fragment="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="h4 mb-0">Bayi Düzenle</h1>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/dealers}">Listeye dön</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/admin/dealers/{id}(id=${dealerId})}" method="post" th:object="${form}">
+                    <div th:replace="~{admin/dealers/_form :: dealerForm(form=${form}, submitLabel='Kaydet')}"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

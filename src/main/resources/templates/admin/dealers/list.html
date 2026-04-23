@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Bayiler</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Bayiler', content=~{::content})}">
+    <div th:fragment="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h1 class="h4 mb-0">Bayiler</h1>
+                <div class="text-secondary small">Liste / ekle / düzenle</div>
+            </div>
+            <a class="btn btn-primary" th:href="@{/admin/dealers/new}">Yeni bayi</a>
+        </div>
+
+        <div th:if="${flashSuccess}" class="alert alert-success" th:text="${flashSuccess}"></div>
+        <div th:if="${flashError}" class="alert alert-danger" th:text="${flashError}"></div>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Firma</th>
+                        <th>Yetkili</th>
+                        <th>E-posta</th>
+                        <th>Telefon</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${dealers}">
+                        <td th:text="${d.id}"></td>
+                        <td class="fw-semibold" th:text="${d.name}"></td>
+                        <td th:text="${d.contactName}"></td>
+                        <td th:text="${d.email}"></td>
+                        <td th:text="${d.phone}"></td>
+                        <td>
+                            <span th:if="${d.active}" class="badge text-bg-success">Aktif</span>
+                            <span th:if="${!d.active}" class="badge text-bg-secondary">Pasif</span>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               th:href="@{/admin/dealers/{id}/edit(id=${d.id})}">
+                                Düzenle
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(dealers)}">
+                        <td colspan="7" class="text-center text-secondary py-4">Kayıt yok.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
