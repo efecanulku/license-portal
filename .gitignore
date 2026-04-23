@@ -22,3 +22,24 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Internal company docs (do not commit)
+internal-docs/
+
+# Environment / secrets (do not commit)
+.env
+.env.*
+!.env.example
+
+# Spring Boot / Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+*.iml
+
+# IDEs
+.idea/
+.vscode/
+
+# OS
+Thumbs.db
+Desktop.ini
