@@ -1,0 +1,26 @@
+<div xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+     th:fragment="sidebar">
+    <div class="mb-3">
+        <div class="small text-secondary">Rol</div>
+        <div class="fw-semibold" sec:authorize="hasRole('ADMIN')">ADMIN</div>
+        <div class="fw-semibold" sec:authorize="hasRole('BAYI')">BAYI</div>
+    </div>
+
+    <div class="list-group">
+        <a class="list-group-item list-group-item-action" th:href="@{/}">Ana sayfa</a>
+
+        <div class="mt-3 small text-secondary" sec:authorize="hasRole('ADMIN')">Yönetim</div>
+        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action disabled" href="#">
+            Ürünler (yakında)
+        </a>
+        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action disabled" href="#">
+            Bayiler (yakında)
+        </a>
+
+        <div class="mt-3 small text-secondary" sec:authorize="hasRole('BAYI')">Bayi</div>
+        <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action disabled" href="#">
+            Lisanslarım (yakında)
+        </a>
+    </div>
+</div>
+
