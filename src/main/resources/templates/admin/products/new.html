@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{common/layout :: layout(content=~{::content}, pageTitle='Yeni Ürün')}">
+    <th:block th:fragment="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="h4 mb-0">Yeni Ürün</h1>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/products}">Geri</a>
+        </div>
+
+        <div class="bg-white border rounded-3 p-4" style="max-width: 720px;">
+            <form method="post" th:action="@{/admin/products}" th:object="${form}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="mb-3">
+                    <label class="form-label">Ad</label>
+                    <input class="form-control" th:field="*{name}" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Kod</label>
+                    <input class="form-control" th:field="*{code}" placeholder="SEMKAN_PACS" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Açıklama</label>
+                    <textarea class="form-control" th:field="*{description}" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Secret</label>
+                    <textarea class="form-control" th:field="*{secret}" rows="2" required></textarea>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('secret')}" th:errors="*{secret}"></div>
+                    <div class="form-text">Bu değer AES ile şifrelenerek saklanacaktır.</div>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Kaydet</button>
+            </form>
+        </div>
+    </th:block>
+</th:block>
+</html>
+

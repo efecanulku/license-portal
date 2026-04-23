@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{common/layout :: layout(content=~{::content}, pageTitle='Ürünler')}">
+    <th:block th:fragment="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="h4 mb-0">Ürünler</h1>
+            <a class="btn btn-primary btn-sm" th:href="@{/admin/products/new}">Yeni ürün</a>
+        </div>
+
+        <div class="bg-white border rounded-3 overflow-hidden">
+            <table class="table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Ad</th>
+                    <th>Kod</th>
+                    <th>Aktif</th>
+                    <th>Oluşturma</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(products)}">
+                    <td colspan="4" class="text-secondary">Henüz ürün yok.</td>
+                </tr>
+                <tr th:each="p : ${products}">
+                    <td th:text="${p.name}"></td>
+                    <td><code th:text="${p.code}"></code></td>
+                    <td th:text="${p.active} ? 'Evet' : 'Hayır'"></td>
+                    <td th:text="${p.createdAt}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </th:block>
+</th:block>
+</html>
+
