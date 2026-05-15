@@ -2,12 +2,12 @@
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
-    <title>Lisans Üretildi</title>
+    <title th:text="${pageTitle}">Lisans</title>
 </head>
 <body>
-<div th:replace="~{common/layout :: layout(pageTitle='Lisans Üretildi', content=~{::content})}">
+<div th:replace="~{common/layout :: layout(pageTitle=${pageTitle}, content=~{::content})}">
     <div th:fragment="content">
-        <h1 class="h4 mb-3">Lisans üretildi</h1>
+        <h1 class="h4 mb-3" th:text="${heading}">Lisans</h1>
 
         <div class="card mb-4">
             <div class="card-body text-center">
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-header">Özet</div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex justify-content-between">
@@ -37,6 +37,14 @@
                     <span th:text="${license.dealer.name}"></span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Üreten</span>
+                    <span th:text="${license.createdBy.username}"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Sistem anahtarı</span>
+                    <span class="font-monospace small" th:text="${license.systemKey}"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
                     <span class="text-secondary">Geçerlilik</span>
                     <span th:text="${#temporals.format(license.validUntil, 'dd.MM.yyyy')}"></span>
                 </li>
@@ -48,6 +56,10 @@
                     <span class="text-secondary">Demo</span>
                     <span th:text="${license.isDemo} ? 'Evet' : 'Hayır'"></span>
                 </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Oluşturma</span>
+                    <span th:text="${license.createdAt}"></span>
+                </li>
                 <li class="list-group-item" th:if="${license.licenseOwnerDescription}">
                     <span class="text-secondary d-block">Sahip açıklaması</span>
                     <span th:text="${license.licenseOwnerDescription}"></span>
@@ -55,7 +67,8 @@
             </ul>
         </div>
 
-        <a class="btn btn-secondary mt-3" th:href="${backUrl}">Yeni lisans üret</a>
+        <a class="btn btn-secondary" th:href="${backUrl}" th:text="${backLabel}">Geri</a>
+        <a class="btn btn-outline-primary ms-2" th:if="${generateUrl}" th:href="${generateUrl}">Yeni lisans üret</a>
     </div>
 </div>
 

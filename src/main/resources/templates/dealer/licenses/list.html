@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Lisanslarım</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Lisanslarım', content=~{::content})}">
+    <div th:fragment="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h1 class="h4 mb-0">Lisanslarım</h1>
+                <div class="text-secondary small">Bayinize ait üretilen lisanslar</div>
+            </div>
+            <a class="btn btn-primary" th:href="@{/dealer/licenses/new}">Lisans üret</a>
+        </div>
+
+        <div th:replace="~{licenses/_list-filters :: licenseFilters(formAction='/dealer/licenses', showDealerFilter=false)}"></div>
+        <div th:replace="~{licenses/_list-table :: licenseTable(licenses=${licenses}, showDealerColumn=false, adminDetailLinks=false)}"></div>
+    </div>
+</div>
+</body>
+</html>

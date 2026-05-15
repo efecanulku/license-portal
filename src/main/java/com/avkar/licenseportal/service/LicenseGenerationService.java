@@ -12,7 +12,6 @@ import com.avkar.licenseportal.repository.LicenseRepository;
 import com.avkar.licenseportal.repository.ProductRepository;
 import com.avkar.licenseportal.security.CurrentUserContext;
 import com.avkar.licenseportal.security.DealerAccessGuard;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,23 +90,6 @@ public class LicenseGenerationService {
         license.setCreatedAt(LocalDateTime.now());
 
         return licenseRepository.save(license);
-    }
-
-    @Transactional(readOnly = true)
-    public License getForCurrentUser(Long licenseId) {
-        License license = licenseRepository.findByIdWithDetails(licenseId)
-                .orElseThrow(() -> new NoSuchElementException("License not found: " + licenseId));
-
-        if (currentUserContext.isAdmin()) {
-            dealerAccessGuard.requireAdmin();
-            return license;
-        }
-
-        Long dealerId = dealerAccessGuard.requireCurrentDealerId();
-        if (!license.getDealer().getId().equals(dealerId)) {
-            throw new AccessDeniedException("Bu lisansa erişim yetkiniz yok.");
-        }
-        return license;
     }
 
     private Dealer resolveDealer(Customer customer, Long productId) {

@@ -1,0 +1,39 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="licenseFilters(formAction, showDealerFilter)">
+    <form class="card card-body mb-3" method="get" th:action="${formAction}" th:object="${filter}">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3" th:if="${showDealerFilter}">
+                <label class="form-label" for="dealerId">Bayi</label>
+                <select id="dealerId" class="form-select" th:field="*{dealerId}">
+                    <option value="">Tümü</option>
+                    <option th:each="d : ${dealers}" th:value="${d.id}" th:text="${d.name}"></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="productId">Ürün</label>
+                <select id="productId" class="form-select" th:field="*{productId}">
+                    <option value="">Tümü</option>
+                    <option th:each="p : ${products}" th:value="${p.id}"
+                            th:text="|${p.name} (${p.code})|"></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="customerId">Kurum</label>
+                <select id="customerId" class="form-select" th:field="*{customerId}">
+                    <option value="">Tümü</option>
+                    <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="validUntilFrom">Geçerlilik (başlangıç)</label>
+                <input id="validUntilFrom" type="date" class="form-control" th:field="*{validUntilFrom}"/>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="validUntilTo">Geçerlilik (bitiş)</label>
+                <input id="validUntilTo" type="date" class="form-control" th:field="*{validUntilTo}"/>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit">Filtrele</button>
+            </div>
+        </div>
+    </form>
+</div>

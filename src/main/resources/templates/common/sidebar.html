@@ -19,6 +19,9 @@
         <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/customers}">
             Kurumlar
         </a>
+        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/licenses}">
+            Lisanslar
+        </a>
         <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/licenses/new}">
             Lisans üret
         </a>
@@ -26,6 +29,9 @@
         <div class="mt-3 small text-secondary" sec:authorize="hasRole('BAYI')">Bayi</div>
         <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action" th:href="@{/dealer/customers}">
             Kurumlarım
+        </a>
+        <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action" th:href="@{/dealer/licenses}">
+            Lisanslarım
         </a>
         <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action" th:href="@{/dealer/licenses/new}">
             Lisans üret
