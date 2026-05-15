@@ -1,0 +1,56 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="licenseGenerateForm(submitLabel)" th:object="${form}">
+    <div class="mb-3">
+        <label class="form-label" for="customerId">Kurum</label>
+        <select id="customerId" class="form-select" th:field="*{customerId}" required
+                th:disabled="${#lists.isEmpty(customers)}">
+            <option value="" disabled selected th:if="${#lists.isEmpty(customers)}">Kurum yok</option>
+            <option value="" disabled selected th:if="${!#lists.isEmpty(customers)}">Kurum seçin</option>
+            <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name}"></option>
+        </select>
+        <div class="text-danger small" th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="productId">Ürün</label>
+        <select id="productId" class="form-select" th:field="*{productId}" required
+                th:disabled="${#lists.isEmpty(products)}">
+            <option value="" disabled selected th:if="${#lists.isEmpty(products)}">Ürün yok</option>
+            <option value="" disabled selected th:if="${!#lists.isEmpty(products)}">Ürün seçin</option>
+            <option th:each="p : ${products}" th:value="${p.id}"
+                    th:text="|${p.name} (${p.code})|"></option>
+        </select>
+        <div class="form-text" th:if="${restrictedProducts}">Sadece yetkili olduğunuz aktif ürünler listelenir.</div>
+        <div class="text-danger small" th:if="${#fields.hasErrors('productId')}" th:errors="*{productId}"></div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="systemKey">Sistem anahtarı</label>
+        <input id="systemKey" class="form-control" th:field="*{systemKey}" placeholder="Kurulum makinesinden alınan anahtar"/>
+        <div class="text-danger small" th:if="${#fields.hasErrors('systemKey')}" th:errors="*{systemKey}"></div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="licenseOwnerDescription">Lisans sahibi açıklaması</label>
+        <input id="licenseOwnerDescription" class="form-control" th:field="*{licenseOwnerDescription}"
+               placeholder="Örn: Endoskopi Oda 1"/>
+    </div>
+
+    <div class="form-check mb-3">
+        <input id="cameraEnabled" class="form-check-input" type="checkbox" th:field="*{cameraEnabled}"/>
+        <label class="form-check-label" for="cameraEnabled">Kamera aktif</label>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="validUntil">Geçerlilik tarihi</label>
+        <input id="validUntil" type="date" class="form-control" th:field="*{validUntil}" required/>
+        <div class="text-danger small" th:if="${#fields.hasErrors('validUntil')}" th:errors="*{validUntil}"></div>
+    </div>
+
+    <div class="form-check mb-3">
+        <input id="demo" class="form-check-input" type="checkbox" th:field="*{demo}"/>
+        <label class="form-check-label" for="demo">Demo kurulum</label>
+    </div>
+
+    <button class="btn btn-primary" type="submit" th:text="${submitLabel}"
+            th:disabled="${#lists.isEmpty(products) or #lists.isEmpty(customers)}"></button>
+</div>
