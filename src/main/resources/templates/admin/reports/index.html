@@ -10,9 +10,21 @@
         <h1 class="h4 mb-3">Raporlar</h1>
         <p class="text-secondary small mb-4">Genel lisans raporları (yönetici).</p>
         <div class="list-group">
+            <a class="list-group-item list-group-item-action" th:href="@{/admin/reports/product-count}">
+                <div class="fw-semibold">Ürün bazlı lisans sayısı</div>
+                <div class="small text-secondary">Ürün başına lisans adedi</div>
+            </a>
             <a class="list-group-item list-group-item-action" th:href="@{/admin/reports/dealer-count}">
                 <div class="fw-semibold">Bayi bazlı lisans sayısı</div>
                 <div class="small text-secondary">Tüm bayilerdeki lisans adetleri</div>
+            </a>
+            <a class="list-group-item list-group-item-action" th:href="@{/admin/reports/customer-summary}">
+                <div class="fw-semibold">Müşteri bazlı lisans özeti</div>
+                <div class="small text-secondary">Kurum başına lisans adedi</div>
+            </a>
+            <a class="list-group-item list-group-item-action" th:href="@{/admin/reports/demo-distribution}">
+                <div class="fw-semibold">Demo / üretim dağılımı</div>
+                <div class="small text-secondary">Demo ve üretim lisans oranı</div>
             </a>
             <a class="list-group-item list-group-item-action" th:href="@{/admin/reports/expiring}">
                 <div class="fw-semibold">Süresi dolan / yaklaşan lisanslar</div>

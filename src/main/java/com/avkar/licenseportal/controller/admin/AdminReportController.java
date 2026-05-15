@@ -43,6 +43,29 @@ public class AdminReportController {
         return "reports/expiring";
     }
 
+    @GetMapping("/product-count")
+    public String productCount(Model model) {
+        model.addAttribute("rows", reportService.productLicenseCountsForAdmin());
+        model.addAttribute("reportsIndexUrl", "/admin/reports");
+        return "reports/product-count";
+    }
+
+    @GetMapping("/customer-summary")
+    public String customerSummary(Model model) {
+        model.addAttribute("rows", reportService.customerLicenseSummaryForAdmin());
+        model.addAttribute("subtitle", "Tüm kurumlar — lisans adedi");
+        model.addAttribute("reportsIndexUrl", "/admin/reports");
+        return "reports/customer-summary";
+    }
+
+    @GetMapping("/demo-distribution")
+    public String demoDistribution(Model model) {
+        model.addAttribute("distribution", reportService.demoDistributionForAdmin());
+        model.addAttribute("subtitle", "Tüm lisanslar");
+        model.addAttribute("reportsIndexUrl", "/admin/reports");
+        return "reports/demo-distribution";
+    }
+
     public static void populateExpiringModel(
             Model model,
             ExpiringLicenseFilter filter,

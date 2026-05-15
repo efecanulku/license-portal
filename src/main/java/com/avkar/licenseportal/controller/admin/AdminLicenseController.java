@@ -53,7 +53,9 @@ public class AdminLicenseController {
 
     @GetMapping
     public String list(@ModelAttribute LicenseListFilter filter, Model model) {
-        model.addAttribute("licenses", licenseService.listForAdmin(filter));
+        var licensePage = licenseService.listForAdmin(filter);
+        model.addAttribute("licensePage", licensePage);
+        model.addAttribute("licenses", licensePage.getContent());
         model.addAttribute("filter", filter);
         model.addAttribute("dealers", dealerService.listAll());
         model.addAttribute("products", productRepository.findByActiveTrueOrderByNameAsc());

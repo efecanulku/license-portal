@@ -16,7 +16,10 @@
         </div>
 
         <div th:replace="~{licenses/_list-filters :: licenseFilters(formAction='/dealer/licenses', showDealerFilter=false)}"></div>
+        <p class="text-secondary small mb-2" th:if="${licensePage != null}"
+           th:text="|${licensePage.totalElements} kayıt|"></p>
         <div th:replace="~{licenses/_list-table :: licenseTable(licenses=${licenses}, showDealerColumn=false, adminDetailLinks=false)}"></div>
+        <div th:replace="~{licenses/_list-pagination :: licensePagination(page=${licensePage}, filter=${filter}, formAction='/dealer/licenses', showDealerFilter=false)}"></div>
     </div>
 </div>
 </body>

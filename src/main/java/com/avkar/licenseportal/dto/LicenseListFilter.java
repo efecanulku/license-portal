@@ -5,6 +5,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 public class LicenseListFilter {
+    public static final int PAGE_SIZE = 20;
+
     private Long dealerId;
     private Long productId;
     private Long customerId;
@@ -14,6 +16,8 @@ public class LicenseListFilter {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate validUntilTo;
+
+    private int page = 0;
 
     public Long getDealerId() {
         return dealerId;
@@ -53,5 +57,13 @@ public class LicenseListFilter {
 
     public void setValidUntilTo(LocalDate validUntilTo) {
         this.validUntilTo = validUntilTo;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = Math.max(0, page);
     }
 }

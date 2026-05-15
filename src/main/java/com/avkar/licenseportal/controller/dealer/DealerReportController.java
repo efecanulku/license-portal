@@ -43,4 +43,20 @@ public class DealerReportController {
         model.addAttribute("reportsIndexUrl", "/dealer/reports");
         return "reports/expiring";
     }
+
+    @GetMapping("/customer-summary")
+    public String customerSummary(Model model) {
+        model.addAttribute("rows", reportService.customerLicenseSummaryForCurrentBayi());
+        model.addAttribute("subtitle", "Kendi kurumlarınız — sizin ürettiğiniz lisanslar");
+        model.addAttribute("reportsIndexUrl", "/dealer/reports");
+        return "reports/customer-summary";
+    }
+
+    @GetMapping("/demo-distribution")
+    public String demoDistribution(Model model) {
+        model.addAttribute("distribution", reportService.demoDistributionForCurrentBayi());
+        model.addAttribute("subtitle", "Sizin ürettiğiniz lisanslar");
+        model.addAttribute("reportsIndexUrl", "/dealer/reports");
+        return "reports/demo-distribution";
+    }
 }

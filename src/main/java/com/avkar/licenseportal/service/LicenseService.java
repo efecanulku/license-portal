@@ -7,6 +7,9 @@ import com.avkar.licenseportal.entity.User;
 import com.avkar.licenseportal.repository.LicenseRepository;
 import com.avkar.licenseportal.security.CurrentUserContext;
 import com.avkar.licenseportal.security.DealerAccessGuard;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,28 +34,38 @@ public class LicenseService {
     }
 
     @Transactional(readOnly = true)
-    public List<License> listForAdmin(LicenseListFilter filter) {
+    public Page<License> listForAdmin(LicenseListFilter filter) {
         dealerAccessGuard.requireAdmin();
-        return licenseRepository.searchWithFilters(
+        return licenseRepository.searchWithFiltersPage(
                 filter.getDealerId(),
                 filter.getProductId(),
                 filter.getCustomerId(),
                 filter.getValidUntilFrom(),
-                filter.getValidUntilTo()
+                filter.getValidUntilTo(),
+                pageableForList(filter)
         );
     }
 
     @Transactional(readOnly = true)
-    public List<License> listForCurrentBayi(LicenseListFilter filter) {
+    public Page<License> listForCurrentBayi(LicenseListFilter filter) {
         User user = currentUserContext.requireUser();
         Long dealerId = dealerAccessGuard.requireCurrentDealerId();
-        return licenseRepository.searchForBayiUser(
+        return licenseRepository.searchForBayiUserPage(
                 user.getId(),
                 dealerId,
                 filter.getProductId(),
                 filter.getCustomerId(),
                 filter.getValidUntilFrom(),
-                filter.getValidUntilTo()
+                filter.getValidUntilTo(),
+                pageableForList(filter)
+        );
+    }
+
+    private static PageRequest pageableForList(LicenseListFilter filter) {
+        return PageRequest.of(
+                filter.getPage(),
+                LicenseListFilter.PAGE_SIZE,
+                Sort.by(Sort.Direction.DESC, "createdAt").and(Sort.by(Sort.Direction.DESC, "id"))
         );
     }
 

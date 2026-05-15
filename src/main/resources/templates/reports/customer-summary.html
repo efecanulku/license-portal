@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Müşteri bazlı lisans özeti</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Müşteri bazlı lisans özeti', content=~{::content})}">
+    <div th:fragment="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h1 class="h4 mb-0">Müşteri bazlı lisans özeti</h1>
+                <div class="text-secondary small" th:text="${subtitle}"></div>
+            </div>
+            <a class="btn btn-outline-secondary btn-sm" th:href="${reportsIndexUrl}">← Raporlar</a>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead>
+                    <tr>
+                        <th>Kurum</th>
+                        <th class="text-end">Lisans sayısı</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${rows}">
+                        <td th:text="${row.customerName}"></td>
+                        <td class="text-end fw-semibold" th:text="${row.licenseCount}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(rows)}">
+                        <td colspan="2" class="text-center text-secondary py-4">Kayıt yok.</td>
+                    </tr>
+                    </tbody>
+                    <tfoot th:if="${!#lists.isEmpty(rows)}">
+                    <tr class="table-light">
+                        <th>Toplam</th>
+                        <th class="text-end" th:text="${#aggregates.sum(rows.![licenseCount])}"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

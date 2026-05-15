@@ -1,8 +1,11 @@
 package com.avkar.licenseportal.service;
 
+import com.avkar.licenseportal.dto.CustomerLicenseSummaryDto;
 import com.avkar.licenseportal.dto.DealerLicenseCountDto;
 import com.avkar.licenseportal.dto.ExpiringLicenseFilter;
+import com.avkar.licenseportal.dto.LicenseDemoDistributionDto;
 import com.avkar.licenseportal.dto.LicenseExpiryStatus;
+import com.avkar.licenseportal.dto.ProductLicenseCountDto;
 import com.avkar.licenseportal.entity.Dealer;
 import com.avkar.licenseportal.entity.License;
 import com.avkar.licenseportal.entity.User;
@@ -68,6 +71,68 @@ public class ReportService {
         User user = currentUserContext.requireUser();
         Long dealerId = dealerAccessGuard.requireCurrentDealerId();
         return searchExpiring(user.getId(), dealerId, filter);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductLicenseCountDto> productLicenseCountsForAdmin() {
+        dealerAccessGuard.requireAdmin();
+        return licenseRepository.countLicensesByProductForAdmin();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CustomerLicenseSummaryDto> customerLicenseSummaryForAdmin() {
+        dealerAccessGuard.requireAdmin();
+        return licenseRepository.summarizeLicensesByCustomerForAdmin();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CustomerLicenseSummaryDto> customerLicenseSummaryForCurrentBayi() {
+        User user = currentUserContext.requireUser();
+        Long dealerId = dealerAccessGuard.requireCurrentDealerId();
+        return licenseRepository.summarizeLicensesByCustomerForBayiUser(user.getId(), dealerId);
+    }
+
+    @Transactional(readOnly = true)
+    public LicenseDemoDistributionDto demoDistributionForAdmin() {
+        dealerAccessGuard.requireAdmin();
+        return new LicenseDemoDistributionDto(
+                licenseRepository.countDemoLicensesForAdmin(),
+                licenseRepository.countProductionLicensesForAdmin()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public LicenseDemoDistributionDto demoDistributionForCurrentBayi() {
+        User user = currentUserContext.requireUser();
+        long demo = licenseRepository.countDemoLicensesForBayiUser(user.getId());
+        long production = licenseRepository.countProductionLicensesForBayiUser(user.getId());
+        return new LicenseDemoDistributionDto(demo, production);
+    }
+
+    @Transactional(readOnly = true)
+    public long countExpiringSoonForAdmin(int withinDays) {
+        dealerAccessGuard.requireAdmin();
+        return countExpiringLicenses(null, null, withinDays);
+    }
+
+    @Transactional(readOnly = true)
+    public long countExpiringSoonForCurrentBayi(int withinDays) {
+        User user = currentUserContext.requireUser();
+        Long dealerId = dealerAccessGuard.requireCurrentDealerId();
+        return countExpiringLicenses(user.getId(), dealerId, withinDays);
+    }
+
+    private long countExpiringLicenses(Long userId, Long dealerId, int withinDays) {
+        LocalDate today = LocalDate.now();
+        LocalDate until = today.plusDays(withinDays);
+        return licenseRepository.searchExpiringLicenses(
+                userId,
+                dealerId,
+                today,
+                until,
+                LicenseExpiryStatus.ALL.name(),
+                PageRequest.of(0, 1)
+        ).getTotalElements();
     }
 
     private Page<License> searchExpiring(Long userId, Long dealerId, ExpiringLicenseFilter filter) {

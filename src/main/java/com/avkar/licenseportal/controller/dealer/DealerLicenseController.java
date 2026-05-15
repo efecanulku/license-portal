@@ -42,7 +42,9 @@ public class DealerLicenseController {
     @GetMapping
     public String list(@ModelAttribute LicenseListFilter filter, Model model) {
         var options = licenseFormService.buildOptionsForCurrentBayi();
-        model.addAttribute("licenses", licenseService.listForCurrentBayi(filter));
+        var licensePage = licenseService.listForCurrentBayi(filter);
+        model.addAttribute("licensePage", licensePage);
+        model.addAttribute("licenses", licensePage.getContent());
         model.addAttribute("filter", filter);
         model.addAttribute("products", licenseService.listFilterProductsForCurrentBayi());
         model.addAttribute("customers", options.getCustomers());

@@ -1,6 +1,8 @@
 package com.avkar.licenseportal.repository;
 
+import com.avkar.licenseportal.dto.CustomerLicenseSummaryDto;
 import com.avkar.licenseportal.dto.DealerLicenseCountDto;
+import com.avkar.licenseportal.dto.ProductLicenseCountDto;
 import com.avkar.licenseportal.entity.License;
 import com.avkar.licenseportal.entity.Product;
 import org.springframework.data.domain.Page;
@@ -46,6 +48,41 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             @Param("validUntilTo") LocalDate validUntilTo
     );
 
+    @Query(
+            value = """
+                    SELECT l FROM License l
+                    JOIN FETCH l.product p
+                    JOIN FETCH l.customer c
+                    JOIN FETCH l.dealer d
+                    JOIN FETCH l.createdBy
+                    WHERE (:dealerId IS NULL OR d.id = :dealerId)
+                      AND (:productId IS NULL OR p.id = :productId)
+                      AND (:customerId IS NULL OR c.id = :customerId)
+                      AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
+                      AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                    ORDER BY l.createdAt DESC, l.id DESC
+                    """,
+            countQuery = """
+                    SELECT COUNT(l) FROM License l
+                    JOIN l.dealer d
+                    JOIN l.product p
+                    JOIN l.customer c
+                    WHERE (:dealerId IS NULL OR d.id = :dealerId)
+                      AND (:productId IS NULL OR p.id = :productId)
+                      AND (:customerId IS NULL OR c.id = :customerId)
+                      AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
+                      AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                    """
+    )
+    Page<License> searchWithFiltersPage(
+            @Param("dealerId") Long dealerId,
+            @Param("productId") Long productId,
+            @Param("customerId") Long customerId,
+            @Param("validUntilFrom") LocalDate validUntilFrom,
+            @Param("validUntilTo") LocalDate validUntilTo,
+            Pageable pageable
+    );
+
     /**
      * BAYI: yalnızca oturumdaki kullanıcının ürettiği lisanslar (döküman §4.2.2).
      */
@@ -70,6 +107,43 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             @Param("customerId") Long customerId,
             @Param("validUntilFrom") LocalDate validUntilFrom,
             @Param("validUntilTo") LocalDate validUntilTo
+    );
+
+    @Query(
+            value = """
+                    SELECT l FROM License l
+                    JOIN FETCH l.product p
+                    JOIN FETCH l.customer c
+                    JOIN FETCH l.dealer d
+                    JOIN FETCH l.createdBy u
+                    WHERE u.id = :userId
+                      AND d.id = :dealerId
+                      AND (:productId IS NULL OR p.id = :productId)
+                      AND (:customerId IS NULL OR c.id = :customerId)
+                      AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
+                      AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                    ORDER BY l.createdAt DESC, l.id DESC
+                    """,
+            countQuery = """
+                    SELECT COUNT(l) FROM License l
+                    JOIN l.dealer d
+                    JOIN l.createdBy u
+                    WHERE u.id = :userId
+                      AND d.id = :dealerId
+                      AND (:productId IS NULL OR l.product.id = :productId)
+                      AND (:customerId IS NULL OR l.customer.id = :customerId)
+                      AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
+                      AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                    """
+    )
+    Page<License> searchForBayiUserPage(
+            @Param("userId") Long userId,
+            @Param("dealerId") Long dealerId,
+            @Param("productId") Long productId,
+            @Param("customerId") Long customerId,
+            @Param("validUntilFrom") LocalDate validUntilFrom,
+            @Param("validUntilTo") LocalDate validUntilTo,
+            Pageable pageable
     );
 
     @Query("""
@@ -141,4 +215,71 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             @Param("status") String status,
             Pageable pageable
     );
+
+    @Query("""
+            SELECT new com.avkar.licenseportal.dto.ProductLicenseCountDto(
+                p.id, p.name, p.code, COUNT(l)
+            )
+            FROM License l
+            JOIN l.product p
+            GROUP BY p.id, p.name, p.code
+            ORDER BY COUNT(l) DESC, p.name ASC
+            """)
+    List<ProductLicenseCountDto> countLicensesByProductForAdmin();
+
+    @Query("""
+            SELECT new com.avkar.licenseportal.dto.CustomerLicenseSummaryDto(
+                c.id, c.name, COUNT(l)
+            )
+            FROM License l
+            JOIN l.customer c
+            GROUP BY c.id, c.name
+            ORDER BY COUNT(l) DESC, c.name ASC
+            """)
+    List<CustomerLicenseSummaryDto> summarizeLicensesByCustomerForAdmin();
+
+    @Query("""
+            SELECT new com.avkar.licenseportal.dto.CustomerLicenseSummaryDto(
+                c.id, c.name, COUNT(l)
+            )
+            FROM License l
+            JOIN l.customer c
+            JOIN l.createdBy u
+            WHERE u.id = :userId
+              AND c.createdByDealer.id = :dealerId
+            GROUP BY c.id, c.name
+            ORDER BY COUNT(l) DESC, c.name ASC
+            """)
+    List<CustomerLicenseSummaryDto> summarizeLicensesByCustomerForBayiUser(
+            @Param("userId") Long userId,
+            @Param("dealerId") Long dealerId
+    );
+
+    @Query("""
+            SELECT COUNT(l) FROM License l
+            WHERE l.isDemo = true
+            """)
+    long countDemoLicensesForAdmin();
+
+    @Query("""
+            SELECT COUNT(l) FROM License l
+            WHERE l.isDemo = false OR l.isDemo IS NULL
+            """)
+    long countProductionLicensesForAdmin();
+
+    @Query("""
+            SELECT COUNT(l) FROM License l
+            JOIN l.createdBy u
+            WHERE u.id = :userId
+              AND l.isDemo = true
+            """)
+    long countDemoLicensesForBayiUser(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT COUNT(l) FROM License l
+            JOIN l.createdBy u
+            WHERE u.id = :userId
+              AND (l.isDemo = false OR l.isDemo IS NULL)
+            """)
+    long countProductionLicensesForBayiUser(@Param("userId") Long userId);
 }

@@ -71,23 +71,15 @@ Uygulama: **http://localhost:8080**
 
 > Bu hesaplar yalnızca `local` profil seed'indedir; production'da kullanmayın.
 
-## Hızlı demo akışı
+## Demo ve uçtan uca senaryolar
 
-**Admin**
+Adım adım demo (sunum / QA): **[`docs/DEMO.md`](docs/DEMO.md)**
 
-1. Giriş: `admin` / `password`
-2. Ürünler → ürün ekle (secret kaydedilir, şifreli)
-3. Bayiler → bayi + ürün yetkisi + bayi kullanıcısı
-4. Kurumlar → kurum ekle
-5. Lisans üret → sonuç ekranından anahtarı kopyala
-6. Raporlar → bayi sayısı / süresi dolan-yaklaşan
+Hızlı otomatik duman testi:
 
-**Bayi**
-
-1. Giriş: `dealer` / `password`
-2. Kurumlarım → kurum ekle
-3. Lisans üret (yalnızca yetkili ürünler)
-4. Lisanslarım / Raporlar
+```powershell
+python scripts/test_e2e_smoke.py
+```
 
 ## Otomatik akış testleri
 
@@ -99,8 +91,14 @@ python scripts/test_license_day16.py
 python scripts/test_license_day17.py
 python scripts/test_license_day18.py
 python scripts/test_license_day19.py
+python scripts/test_reports_block_b.py
+python scripts/test_block_c.py
+python scripts/test_security_checklist.py
+python scripts/test_e2e_smoke.py
 python scripts/test_isolation.py
 ```
+
+Güvenlik kontrol listesi (manuel + otomatik): [`docs/SECURITY_CHECKLIST.md`](docs/SECURITY_CHECKLIST.md)
 
 ## Proje yapısı (özet)
 
@@ -118,6 +116,8 @@ scripts/                    # Akış testleri + run-local.ps1
 - [`docs/PLANNING.md`](docs/PLANNING.md) — 20 iş günü milestone
 - [`docs/BRANCHING.md`](docs/BRANCHING.md) — branch / PR
 - [`docs/ENV.md`](docs/ENV.md) — gizli bilgi yönetimi
+- [`docs/SECURITY_CHECKLIST.md`](docs/SECURITY_CHECKLIST.md) — rol, izolasyon, secret kontrolleri
+- [`docs/DEMO.md`](docs/DEMO.md) — uçtan uca admin/bayi demo senaryoları
 
 ## Notlar
 
