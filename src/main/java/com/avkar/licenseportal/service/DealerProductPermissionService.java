@@ -3,11 +3,11 @@ package com.avkar.licenseportal.service;
 import com.avkar.licenseportal.entity.Dealer;
 import com.avkar.licenseportal.entity.DealerProductPermission;
 import com.avkar.licenseportal.entity.Product;
-import com.avkar.licenseportal.entity.User;
 import com.avkar.licenseportal.repository.DealerProductPermissionRepository;
 import com.avkar.licenseportal.repository.ProductRepository;
-import com.avkar.licenseportal.repository.UserRepository;
-import com.avkar.licenseportal.security.SecurityUtils;
+import com.avkar.licenseportal.security.CurrentUserContext;
+import com.avkar.licenseportal.security.DealerAccessGuard;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,28 +22,33 @@ public class DealerProductPermissionService {
     private final DealerProductPermissionRepository permissionRepository;
     private final ProductRepository productRepository;
     private final DealerService dealerService;
-    private final UserRepository userRepository;
+    private final CurrentUserContext currentUserContext;
+    private final DealerAccessGuard dealerAccessGuard;
 
     public DealerProductPermissionService(
             DealerProductPermissionRepository permissionRepository,
             ProductRepository productRepository,
             DealerService dealerService,
-            UserRepository userRepository
+            CurrentUserContext currentUserContext,
+            DealerAccessGuard dealerAccessGuard
     ) {
         this.permissionRepository = permissionRepository;
         this.productRepository = productRepository;
         this.dealerService = dealerService;
-        this.userRepository = userRepository;
+        this.currentUserContext = currentUserContext;
+        this.dealerAccessGuard = dealerAccessGuard;
     }
 
     @Transactional(readOnly = true)
     public List<DealerProductPermission> listForDealer(Long dealerId) {
+        dealerAccessGuard.requireAdmin();
         ensureDealerExists(dealerId);
         return permissionRepository.findByDealerIdWithDetails(dealerId);
     }
 
     @Transactional(readOnly = true)
     public List<Product> listGrantableProducts(Long dealerId) {
+        dealerAccessGuard.requireAdmin();
         ensureDealerExists(dealerId);
         Set<Long> grantedProductIds = permissionRepository.findByDealerIdWithDetails(dealerId).stream()
                 .map(p -> p.getProduct().getId())
@@ -56,8 +61,28 @@ public class DealerProductPermissionService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<Product> listPermittedActiveProductsForCurrentBayi() {
+        Long dealerId = dealerAccessGuard.requireCurrentDealerId();
+        return permissionRepository.findActiveProductsByDealerId(dealerId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasProductPermissionForCurrentBayi(Long productId) {
+        Long dealerId = dealerAccessGuard.requireCurrentDealerId();
+        return permissionRepository.existsByDealer_IdAndProduct_Id(dealerId, productId);
+    }
+
+    @Transactional(readOnly = true)
+    public void assertProductPermissionForCurrentBayi(Long productId) {
+        if (!hasProductPermissionForCurrentBayi(productId)) {
+            throw new AccessDeniedException("Bu ürün için yetkiniz yok.");
+        }
+    }
+
     @Transactional
     public DealerProductPermission grant(Long dealerId, Long productId) {
+        dealerAccessGuard.requireAdmin();
         Dealer dealer = dealerService.getById(dealerId);
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException("Product not found: " + productId));
@@ -73,12 +98,13 @@ public class DealerProductPermissionService {
         permission.setDealer(dealer);
         permission.setProduct(product);
         permission.setGrantedAt(LocalDateTime.now());
-        SecurityUtils.getCurrentUser(userRepository).ifPresent(permission::setGrantedBy);
+        currentUserContext.findCurrentUser().ifPresent(permission::setGrantedBy);
         return permissionRepository.save(permission);
     }
 
     @Transactional
     public void revoke(Long dealerId, Long productId) {
+        dealerAccessGuard.requireAdmin();
         ensureDealerExists(dealerId);
         if (!permissionRepository.existsByDealer_IdAndProduct_Id(dealerId, productId)) {
             throw new NoSuchElementException("Permission not found for dealer=" + dealerId + " product=" + productId);

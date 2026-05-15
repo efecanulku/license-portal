@@ -6,6 +6,7 @@ import com.avkar.licenseportal.entity.Dealer;
 import com.avkar.licenseportal.entity.Role;
 import com.avkar.licenseportal.entity.User;
 import com.avkar.licenseportal.repository.UserRepository;
+import com.avkar.licenseportal.security.DealerAccessGuard;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,25 +20,30 @@ public class DealerUserService {
     private final UserRepository userRepository;
     private final DealerService dealerService;
     private final PasswordEncoder passwordEncoder;
+    private final DealerAccessGuard dealerAccessGuard;
 
     public DealerUserService(
             UserRepository userRepository,
             DealerService dealerService,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            DealerAccessGuard dealerAccessGuard
     ) {
         this.userRepository = userRepository;
         this.dealerService = dealerService;
         this.passwordEncoder = passwordEncoder;
+        this.dealerAccessGuard = dealerAccessGuard;
     }
 
     @Transactional(readOnly = true)
     public List<User> listBayiUsers(Long dealerId) {
+        dealerAccessGuard.requireAdmin();
         ensureDealerExists(dealerId);
         return userRepository.findByDealer_IdAndRoleOrderByUsernameAsc(dealerId, Role.BAYI);
     }
 
     @Transactional(readOnly = true)
     public User getBayiUser(Long dealerId, Long userId) {
+        dealerAccessGuard.requireAdmin();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
         if (user.getRole() != Role.BAYI || user.getDealer() == null || !dealerId.equals(user.getDealer().getId())) {
@@ -48,6 +54,7 @@ public class DealerUserService {
 
     @Transactional
     public User create(Long dealerId, DealerUserCreateForm form) {
+        dealerAccessGuard.requireAdmin();
         Dealer dealer = dealerService.getById(dealerId);
         String username = form.getUsername().trim();
         if (userRepository.existsByUsername(username)) {
@@ -69,6 +76,7 @@ public class DealerUserService {
 
     @Transactional
     public User update(Long dealerId, Long userId, DealerUserUpdateForm form) {
+        dealerAccessGuard.requireAdmin();
         User user = getBayiUser(dealerId, userId);
         String username = form.getUsername().trim();
         if (userRepository.existsByUsernameAndIdNot(username, userId)) {
@@ -91,6 +99,7 @@ public class DealerUserService {
 
     @Transactional
     public void toggleActive(Long dealerId, Long userId) {
+        dealerAccessGuard.requireAdmin();
         User user = getBayiUser(dealerId, userId);
         user.setActive(!Boolean.TRUE.equals(user.getActive()));
         user.setUpdatedAt(LocalDateTime.now());

@@ -2,8 +2,6 @@ package com.avkar.licenseportal.controller.dealer;
 
 import com.avkar.licenseportal.dto.CustomerForm;
 import com.avkar.licenseportal.entity.Customer;
-import com.avkar.licenseportal.repository.UserRepository;
-import com.avkar.licenseportal.security.SecurityUtils;
 import com.avkar.licenseportal.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,17 +22,14 @@ import java.util.NoSuchElementException;
 @PreAuthorize("hasRole('BAYI')")
 public class DealerCustomerController {
     private final CustomerService customerService;
-    private final UserRepository userRepository;
 
-    public DealerCustomerController(CustomerService customerService, UserRepository userRepository) {
+    public DealerCustomerController(CustomerService customerService) {
         this.customerService = customerService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping
     public String list(Model model) {
-        Long dealerId = SecurityUtils.requireCurrentDealerId(userRepository);
-        model.addAttribute("customers", customerService.listForDealer(dealerId));
+        model.addAttribute("customers", customerService.listForCurrentBayi());
         return "dealer/customers/list";
     }
 
@@ -53,23 +48,21 @@ public class DealerCustomerController {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes
     ) {
-        Long dealerId = SecurityUtils.requireCurrentDealerId(userRepository);
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.form", bindingResult);
             redirectAttributes.addFlashAttribute("form", form);
             return "redirect:/dealer/customers/new";
         }
 
-        customerService.createForDealer(dealerId, form);
+        customerService.createForCurrentBayi(form);
         redirectAttributes.addFlashAttribute("flashSuccess", "Kurum oluşturuldu.");
         return "redirect:/dealer/customers";
     }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        Long dealerId = SecurityUtils.requireCurrentDealerId(userRepository);
         try {
-            Customer customer = customerService.getForDealer(id, dealerId);
+            Customer customer = customerService.getForCurrentBayi(id);
             if (!model.containsAttribute("form")) {
                 model.addAttribute("form", toForm(customer));
             }
@@ -89,7 +82,6 @@ public class DealerCustomerController {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes
     ) {
-        Long dealerId = SecurityUtils.requireCurrentDealerId(userRepository);
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.form", bindingResult);
             redirectAttributes.addFlashAttribute("form", form);
@@ -97,7 +89,7 @@ public class DealerCustomerController {
         }
 
         try {
-            customerService.updateForDealer(id, dealerId, form);
+            customerService.updateForCurrentBayi(id, form);
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("flashError", "Kurum bulunamadı.");
             return "redirect:/dealer/customers";

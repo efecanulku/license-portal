@@ -1,6 +1,7 @@
 package com.avkar.licenseportal.repository;
 
 import com.avkar.licenseportal.entity.DealerProductPermission;
+import com.avkar.licenseportal.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,11 @@ public interface DealerProductPermissionRepository extends JpaRepository<DealerP
     boolean existsByDealer_IdAndProduct_Id(Long dealerId, Long productId);
 
     void deleteByDealer_IdAndProduct_Id(Long dealerId, Long productId);
+
+    @Query("""
+            SELECT dpp.product FROM DealerProductPermission dpp
+            WHERE dpp.dealer.id = :dealerId AND dpp.product.active = true
+            ORDER BY dpp.product.name ASC
+            """)
+    List<Product> findActiveProductsByDealerId(@Param("dealerId") Long dealerId);
 }
