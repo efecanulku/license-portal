@@ -1,0 +1,30 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="customerForm(submitLabel)" th:object="${form}">
+    <div class="mb-3">
+        <label class="form-label" for="name">Kurum adı</label>
+        <input id="name" class="form-control" th:field="*{name}" placeholder="Örn: ABC Hastanesi"/>
+        <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="taxNumber">Vergi no</label>
+        <input id="taxNumber" class="form-control" th:field="*{taxNumber}" placeholder="Opsiyonel"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="address">Adres</label>
+        <textarea id="address" class="form-control" rows="2" th:field="*{address}" placeholder="Opsiyonel"></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="contactName">Yetkili kişi</label>
+        <input id="contactName" class="form-control" th:field="*{contactName}" placeholder="Opsiyonel"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="contactEmail">İletişim e-posta</label>
+        <input id="contactEmail" type="email" class="form-control" th:field="*{contactEmail}" placeholder="Opsiyonel"/>
+        <div class="text-danger small" th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}"></div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="contactPhone">İletişim telefon</label>
+        <input id="contactPhone" class="form-control" th:field="*{contactPhone}" placeholder="Opsiyonel"/>
+    </div>
+    <button class="btn btn-primary" type="submit" th:text="${submitLabel}"></button>
+    <a class="btn btn-outline-secondary ms-2" th:href="${cancelUrl}">İptal</a>
+</div>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Kurum Düzenle</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Kurum Düzenle', content=~{::content})}">
+    <div th:fragment="content">
+        <h1 class="h4 mb-3">Kurum Düzenle</h1>
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/dealer/customers/{id}(id=${customerId})}" method="post" th:object="${form}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div th:replace="~{dealer/customers/_form :: customerForm(submitLabel='Kaydet')}"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
