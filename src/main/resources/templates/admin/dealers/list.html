@@ -45,6 +45,10 @@
                             <span th:if="${!d.active}" class="badge text-bg-secondary">Pasif</span>
                         </td>
                         <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{/admin/dealers/{id}/users(id=${d.id})}">
+                                Kullanıcılar
+                            </a>
                             <a class="btn btn-sm btn-outline-secondary"
                                th:href="@{/admin/dealers/{id}/edit(id=${d.id})}">
                                 Düzenle
