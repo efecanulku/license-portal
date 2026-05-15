@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Raporlar</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Raporlar', content=~{::content})}">
+    <div th:fragment="content">
+        <h1 class="h4 mb-3">Raporlar</h1>
+        <p class="text-secondary small mb-4">Genel lisans raporları (yönetici).</p>
+        <div class="list-group">
+            <a class="list-group-item list-group-item-action" th:href="@{/admin/reports/dealer-count}">
+                <div class="fw-semibold">Bayi bazlı lisans sayısı</div>
+                <div class="small text-secondary">Tüm bayilerdeki lisans adetleri</div>
+            </a>
+            <a class="list-group-item list-group-item-action" th:href="@{/admin/reports/expiring}">
+                <div class="fw-semibold">Süresi dolan / yaklaşan lisanslar</div>
+                <div class="small text-secondary">Bitiş tarihine göre filtrelenmiş liste</div>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

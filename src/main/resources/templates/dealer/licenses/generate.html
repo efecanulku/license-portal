@@ -9,6 +9,14 @@
     <div th:fragment="content">
         <h1 class="h4 mb-3">Lisans Üret</h1>
         <p class="text-secondary small mb-3">Yalnızca yetkili ürünleriniz ve kendi kurumlarınız listelenir.</p>
+
+        <div th:if="${#lists.isEmpty(customers)}" class="alert alert-warning" role="alert">
+            Henüz kurum kaydınız yok. Önce bir kurum ekleyin.
+        </div>
+        <div th:if="${!#lists.isEmpty(customers) and #lists.isEmpty(products)}" class="alert alert-warning" role="alert">
+            Ürün yetkiniz bulunmuyor. Yöneticinizden ürün yetkisi isteyin.
+        </div>
+
         <div class="card">
             <div class="card-body">
                 <form th:action="@{/dealer/licenses/new}" method="post" th:object="${form}">

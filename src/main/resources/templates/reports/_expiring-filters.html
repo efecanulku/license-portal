@@ -1,0 +1,25 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="expiringFilters">
+    <form class="card mb-3" th:action="${formAction}" method="get" th:object="${filter}">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label" for="status">Durum</label>
+                    <select id="status" class="form-select" name="status" th:field="${filter.status}">
+                        <option th:value="${T(com.avkar.licenseportal.dto.LicenseExpiryStatus).ALL}">Tümü (dolmuş + yaklaşan)</option>
+                        <option th:value="${T(com.avkar.licenseportal.dto.LicenseExpiryStatus).EXPIRED}">Süresi dolmuş</option>
+                        <option th:value="${T(com.avkar.licenseportal.dto.LicenseExpiryStatus).EXPIRING}">Yaklaşan</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="withinDays">Yaklaşan süre (gün)</label>
+                    <input id="withinDays" type="number" class="form-control" name="withinDays"
+                           min="1" max="365" th:field="${filter.withinDays}"/>
+                    <div class="form-text">“Tümü” ve “Yaklaşan” için üst sınır.</div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" type="submit">Filtrele</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

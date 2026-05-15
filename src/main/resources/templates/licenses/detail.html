@@ -9,15 +9,32 @@
     <div th:fragment="content">
         <h1 class="h4 mb-3" th:text="${heading}">Lisans</h1>
 
-        <div class="card mb-4">
-            <div class="card-body text-center">
+        <div th:if="${justGenerated}" class="alert alert-success" role="status">
+            Lisans başarıyla oluşturuldu. Anahtarı kopyalayıp müşteriye iletebilirsiniz.
+        </div>
+
+        <div class="card mb-4"
+             th:classappend="${justGenerated} ? 'border-success border-2 shadow-sm' : ''">
+            <div class="card-body text-center py-4">
                 <div class="text-secondary small mb-2">Lisans anahtarı</div>
-                <div id="licenseKey" class="fs-4 font-monospace fw-semibold user-select-all mb-3"
+                <div id="licenseKey"
+                     class="font-monospace fw-semibold user-select-all mb-3 text-break"
+                     th:classappend="${justGenerated} ? 'fs-3' : 'fs-4'"
                      th:text="${license.licenseKey}">XXXX-XXXX</div>
-                <button type="button" class="btn btn-outline-primary btn-sm" id="copyLicenseBtn">
-                    Kopyala
-                </button>
-                <span id="copyFeedback" class="text-success small ms-2 d-none">Kopyalandı</span>
+                <div>
+                    <button type="button"
+                            class="btn btn-sm"
+                            id="copyLicenseBtn"
+                            th:classappend="${justGenerated} ? 'btn-primary' : 'btn-outline-primary'"
+                            aria-label="Lisans anahtarını panoya kopyala"
+                            title="Panoya kopyala">
+                        Kopyala
+                    </button>
+                    <span id="copyFeedback" class="small ms-2 d-none" aria-live="polite"></span>
+                </div>
+                <p th:if="${justGenerated}" class="text-secondary small mt-3 mb-0">
+                    Bu ekranı kapattıktan sonra anahtara lisans listesinden veya detaydan ulaşabilirsiniz.
+                </p>
             </div>
         </div>
 
@@ -69,34 +86,9 @@
 
         <a class="btn btn-secondary" th:href="${backUrl}" th:text="${backLabel}">Geri</a>
         <a class="btn btn-outline-primary ms-2" th:if="${generateUrl}" th:href="${generateUrl}">Yeni lisans üret</a>
+
+        <script th:src="@{/js/license-copy.js}"></script>
     </div>
 </div>
-
-<script th:inline="javascript">
-    (function () {
-        const keyEl = document.getElementById('licenseKey');
-        const btn = document.getElementById('copyLicenseBtn');
-        const feedback = document.getElementById('copyFeedback');
-        if (!keyEl || !btn) return;
-        btn.addEventListener('click', function () {
-            const text = keyEl.textContent.trim();
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(showCopied);
-            } else {
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                showCopied();
-            }
-        });
-        function showCopied() {
-            feedback.classList.remove('d-none');
-            setTimeout(function () { feedback.classList.add('d-none'); }, 2000);
-        }
-    })();
-</script>
 </body>
 </html>

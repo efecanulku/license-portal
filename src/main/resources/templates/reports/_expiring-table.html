@@ -1,0 +1,52 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="expiringTable">
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0 align-middle">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Durum</th>
+                    <th>Ürün</th>
+                    <th>Kurum</th>
+                    <th th:if="${showDealerColumn}">Bayi</th>
+                    <th>Geçerlilik</th>
+                    <th>Kalan gün</th>
+                    <th class="text-end">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${licenses}">
+                    <td th:text="${l.id}"></td>
+                    <td>
+                        <span th:if="${l.validUntil.isBefore(today)}" class="badge text-bg-danger">Süresi doldu</span>
+                        <span th:unless="${l.validUntil.isBefore(today)}" class="badge text-bg-warning text-dark">Yaklaşıyor</span>
+                    </td>
+                    <td>
+                        <div class="fw-semibold" th:text="${l.product.name}"></div>
+                        <div class="small text-secondary" th:text="${l.product.code}"></div>
+                    </td>
+                    <td th:text="${l.customer.name}"></td>
+                    <td th:if="${showDealerColumn}" th:text="${l.dealer.name}"></td>
+                    <td th:text="${#temporals.format(l.validUntil, 'dd.MM.yyyy')}"></td>
+                    <td>
+                        <span th:if="${l.validUntil.isBefore(today)}" class="text-secondary">—</span>
+                        <span th:unless="${l.validUntil.isBefore(today)}"
+                              th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(today, l.validUntil)}"></span>
+                    </td>
+                    <td class="text-end">
+                        <a th:if="${adminDetailLinks}" class="btn btn-sm btn-outline-primary"
+                           th:href="@{/admin/licenses/{id}(id=${l.id})}">Detay</a>
+                        <a th:unless="${adminDetailLinks}" class="btn btn-sm btn-outline-primary"
+                           th:href="@{/dealer/licenses/{id}(id=${l.id})}">Detay</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(licenses)}">
+                    <td th:colspan="${showDealerColumn} ? 8 : 7" class="text-center text-secondary py-4">
+                        Bu filtreye uygun lisans yok.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

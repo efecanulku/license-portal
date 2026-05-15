@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Süresi dolan / yaklaşan lisanslar</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Süresi dolan / yaklaşan lisanslar', content=~{::content})}">
+    <div th:fragment="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h1 class="h4 mb-0">Süresi dolan / yaklaşan lisanslar</h1>
+                <div class="text-secondary small"
+                     th:text="${showDealerColumn} ? 'Tüm lisanslar' : 'Yalnızca sizin ürettikleriniz'"></div>
+            </div>
+            <a class="btn btn-outline-secondary btn-sm" th:href="${reportsIndexUrl}">← Raporlar</a>
+        </div>
+
+        <div th:replace="~{reports/_expiring-filters :: expiringFilters}"></div>
+        <div th:replace="~{reports/_expiring-table :: expiringTable}"></div>
+        <div th:replace="~{reports/_pagination :: reportPagination(page=${licensePage}, filter=${filter}, formAction=${formAction})}"></div>
+    </div>
+</div>
+</body>
+</html>

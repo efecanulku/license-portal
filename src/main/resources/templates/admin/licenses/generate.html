@@ -9,6 +9,14 @@
     <div th:fragment="content">
         <h1 class="h4 mb-3">Lisans Üret</h1>
         <p class="text-secondary small mb-3">Tüm aktif ürünler ve kurumlar listelenir.</p>
+
+        <div th:if="${#lists.isEmpty(customers)}" class="alert alert-warning" role="alert">
+            Lisans üretmek için önce en az bir kurum tanımlanmalıdır.
+        </div>
+        <div th:if="${!#lists.isEmpty(customers) and #lists.isEmpty(products)}" class="alert alert-warning" role="alert">
+            Aktif ürün bulunmuyor. Ürün yönetiminden aktif ürün ekleyin.
+        </div>
+
         <div class="card">
             <div class="card-body">
                 <form th:action="@{/admin/licenses/new}" method="post" th:object="${form}">

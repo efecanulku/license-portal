@@ -1,18 +1,27 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="licenseGenerateForm(submitLabel)" th:object="${form}">
+    <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert">
+        <div class="fw-semibold mb-1">Lütfen formu kontrol edin</div>
+        <ul class="mb-0 small ps-3">
+            <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+        </ul>
+    </div>
+
     <div class="mb-3">
-        <label class="form-label" for="customerId">Kurum</label>
+        <label class="form-label" for="customerId">Kurum <span class="text-danger">*</span></label>
         <select id="customerId" class="form-select" th:field="*{customerId}" required
+                th:classappend="${#fields.hasErrors('customerId')} ? 'is-invalid' : ''"
                 th:disabled="${#lists.isEmpty(customers)}">
             <option value="" disabled selected th:if="${#lists.isEmpty(customers)}">Kurum yok</option>
             <option value="" disabled selected th:if="${!#lists.isEmpty(customers)}">Kurum seçin</option>
             <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name}"></option>
         </select>
-        <div class="text-danger small" th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></div>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="productId">Ürün</label>
+        <label class="form-label" for="productId">Ürün <span class="text-danger">*</span></label>
         <select id="productId" class="form-select" th:field="*{productId}" required
+                th:classappend="${#fields.hasErrors('productId')} ? 'is-invalid' : ''"
                 th:disabled="${#lists.isEmpty(products)}">
             <option value="" disabled selected th:if="${#lists.isEmpty(products)}">Ürün yok</option>
             <option value="" disabled selected th:if="${!#lists.isEmpty(products)}">Ürün seçin</option>
@@ -20,13 +29,16 @@
                     th:text="|${p.name} (${p.code})|"></option>
         </select>
         <div class="form-text" th:if="${restrictedProducts}">Sadece yetkili olduğunuz aktif ürünler listelenir.</div>
-        <div class="text-danger small" th:if="${#fields.hasErrors('productId')}" th:errors="*{productId}"></div>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors('productId')}" th:errors="*{productId}"></div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="systemKey">Sistem anahtarı</label>
-        <input id="systemKey" class="form-control" th:field="*{systemKey}" placeholder="Kurulum makinesinden alınan anahtar"/>
-        <div class="text-danger small" th:if="${#fields.hasErrors('systemKey')}" th:errors="*{systemKey}"></div>
+        <label class="form-label" for="systemKey">Sistem anahtarı <span class="text-danger">*</span></label>
+        <input id="systemKey" class="form-control" th:field="*{systemKey}"
+               th:classappend="${#fields.hasErrors('systemKey')} ? 'is-invalid' : ''"
+               placeholder="Kurulum makinesinden alınan anahtar" autocomplete="off"/>
+        <div class="form-text">Müşteri kurulumundan alınan benzersiz makine anahtarıdır.</div>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors('systemKey')}" th:errors="*{systemKey}"></div>
     </div>
 
     <div class="mb-3">
@@ -41,9 +53,12 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="validUntil">Geçerlilik tarihi</label>
-        <input id="validUntil" type="date" class="form-control" th:field="*{validUntil}" required/>
-        <div class="text-danger small" th:if="${#fields.hasErrors('validUntil')}" th:errors="*{validUntil}"></div>
+        <label class="form-label" for="validUntil">Geçerlilik tarihi <span class="text-danger">*</span></label>
+        <input id="validUntil" type="date" class="form-control" th:field="*{validUntil}" required
+               th:classappend="${#fields.hasErrors('validUntil')} ? 'is-invalid' : ''"
+               th:attr="min=${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"/>
+        <div class="form-text">Lisans bu tarihe kadar geçerlidir (bugün dahil).</div>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors('validUntil')}" th:errors="*{validUntil}"></div>
     </div>
 
     <div class="form-check mb-3">

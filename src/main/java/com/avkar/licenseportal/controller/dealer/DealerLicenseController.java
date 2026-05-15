@@ -6,6 +6,7 @@ import com.avkar.licenseportal.entity.License;
 import com.avkar.licenseportal.service.LicenseFormService;
 import com.avkar.licenseportal.service.LicenseGenerationService;
 import com.avkar.licenseportal.service.LicenseService;
+import com.avkar.licenseportal.util.LicenseGenerationMessages;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -71,7 +72,7 @@ public class DealerLicenseController {
             redirectAttributes.addFlashAttribute("justGenerated", true);
             return "redirect:/dealer/licenses/" + license.getId();
         } catch (Exception e) {
-            model.addAttribute("flashError", "Lisans üretilemedi: " + e.getMessage());
+            model.addAttribute("flashError", LicenseGenerationMessages.userMessage(e));
             populateModel(model);
             return "dealer/licenses/generate";
         }
@@ -81,6 +82,7 @@ public class DealerLicenseController {
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("license", licenseService.getForCurrentUser(id));
         boolean justGenerated = Boolean.TRUE.equals(model.getAttribute("justGenerated"));
+        model.addAttribute("justGenerated", justGenerated);
         model.addAttribute("pageTitle", justGenerated ? "Lisans Üretildi" : "Lisans Detayı");
         model.addAttribute("heading", justGenerated ? "Lisans üretildi" : "Lisans detayı");
         model.addAttribute("backUrl", "/dealer/licenses");
