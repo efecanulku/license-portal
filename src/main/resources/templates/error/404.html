@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{common/layout :: layout(content=~{::content}, pageTitle='Bulunamadı')}">
+    <th:block th:fragment="content">
+        <div class="bg-white border rounded-3 p-4">
+            <h1 class="h4 mb-2">Kayıt bulunamadı</h1>
+            <p class="text-secondary mb-0">
+                İstediğiniz kayıt mevcut değil.
+            </p>
+        </div>
+    </th:block>
+</th:block>
+</html>

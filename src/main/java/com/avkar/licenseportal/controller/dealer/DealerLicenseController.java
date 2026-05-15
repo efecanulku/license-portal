@@ -1,7 +1,9 @@
 package com.avkar.licenseportal.controller.dealer;
 
 import com.avkar.licenseportal.dto.LicenseGenerateForm;
+import com.avkar.licenseportal.entity.License;
 import com.avkar.licenseportal.service.LicenseFormService;
+import com.avkar.licenseportal.service.LicenseGenerationService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -9,9 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -20,9 +22,14 @@ import java.time.LocalDate;
 @PreAuthorize("hasRole('BAYI')")
 public class DealerLicenseController {
     private final LicenseFormService licenseFormService;
+    private final LicenseGenerationService licenseGenerationService;
 
-    public DealerLicenseController(LicenseFormService licenseFormService) {
+    public DealerLicenseController(
+            LicenseFormService licenseFormService,
+            LicenseGenerationService licenseGenerationService
+    ) {
         this.licenseFormService = licenseFormService;
+        this.licenseGenerationService = licenseGenerationService;
     }
 
     @GetMapping("/new")
@@ -32,11 +39,10 @@ public class DealerLicenseController {
     }
 
     @PostMapping("/new")
-    public String validateForm(
+    public String generate(
             @Valid @ModelAttribute("form") LicenseGenerateForm form,
             BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes
+            Model model
     ) {
         if (bindingResult.hasErrors()) {
             populateModel(model);
@@ -44,16 +50,21 @@ public class DealerLicenseController {
         }
 
         try {
-            licenseFormService.validateFormSelections(form);
+            License license = licenseGenerationService.generateAndSave(form);
+            return "redirect:/dealer/licenses/" + license.getId();
         } catch (Exception e) {
-            model.addAttribute("flashError", "Seçimler geçersiz: " + e.getMessage());
+            model.addAttribute("flashError", "Lisans üretilemedi: " + e.getMessage());
             populateModel(model);
             return "dealer/licenses/generate";
         }
+    }
 
-        redirectAttributes.addFlashAttribute("flashSuccess",
-                "Form doğrulandı. Lisans üretimi Gün 16'da eklenecek.");
-        return "redirect:/dealer/licenses/new";
+    @GetMapping("/{id}")
+    public String result(@PathVariable Long id, Model model) {
+        License license = licenseGenerationService.getForCurrentUser(id);
+        model.addAttribute("license", license);
+        model.addAttribute("backUrl", "/dealer/licenses/new");
+        return "licenses/result";
     }
 
     private void populateModel(Model model) {

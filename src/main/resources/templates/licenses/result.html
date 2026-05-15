@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Lisans Üretildi</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Lisans Üretildi', content=~{::content})}">
+    <div th:fragment="content">
+        <h1 class="h4 mb-3">Lisans üretildi</h1>
+
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <div class="text-secondary small mb-2">Lisans anahtarı</div>
+                <div id="licenseKey" class="fs-4 font-monospace fw-semibold user-select-all mb-3"
+                     th:text="${license.licenseKey}">XXXX-XXXX</div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="copyLicenseBtn">
+                    Kopyala
+                </button>
+                <span id="copyFeedback" class="text-success small ms-2 d-none">Kopyalandı</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Özet</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Ürün</span>
+                    <span th:text="|${license.product.name} (${license.product.code})|"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Kurum</span>
+                    <span th:text="${license.customer.name}"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Bayi</span>
+                    <span th:text="${license.dealer.name}"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Geçerlilik</span>
+                    <span th:text="${#temporals.format(license.validUntil, 'dd.MM.yyyy')}"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Kamera</span>
+                    <span th:text="${license.cameraEnabled} ? 'Aktif' : 'Kapalı'"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">Demo</span>
+                    <span th:text="${license.isDemo} ? 'Evet' : 'Hayır'"></span>
+                </li>
+                <li class="list-group-item" th:if="${license.licenseOwnerDescription}">
+                    <span class="text-secondary d-block">Sahip açıklaması</span>
+                    <span th:text="${license.licenseOwnerDescription}"></span>
+                </li>
+            </ul>
+        </div>
+
+        <a class="btn btn-secondary mt-3" th:href="${backUrl}">Yeni lisans üret</a>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    (function () {
+        const keyEl = document.getElementById('licenseKey');
+        const btn = document.getElementById('copyLicenseBtn');
+        const feedback = document.getElementById('copyFeedback');
+        if (!keyEl || !btn) return;
+        btn.addEventListener('click', function () {
+            const text = keyEl.textContent.trim();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(showCopied);
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showCopied();
+            }
+        });
+        function showCopied() {
+            feedback.classList.remove('d-none');
+            setTimeout(function () { feedback.classList.add('d-none'); }, 2000);
+        }
+    })();
+</script>
+</body>
+</html>

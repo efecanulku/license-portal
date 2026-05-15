@@ -8,12 +8,12 @@
 <div th:replace="~{common/layout :: layout(pageTitle='Lisans Üret', content=~{::content})}">
     <div th:fragment="content">
         <h1 class="h4 mb-3">Lisans Üret</h1>
-        <p class="text-secondary small mb-3">Tüm aktif ürünler ve kurumlar listelenir. Üretim işlemi bir sonraki adımda eklenecek.</p>
+        <p class="text-secondary small mb-3">Tüm aktif ürünler ve kurumlar listelenir.</p>
         <div class="card">
             <div class="card-body">
                 <form th:action="@{/admin/licenses/new}" method="post" th:object="${form}">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <div th:replace="~{licenses/_generate-form :: licenseGenerateForm(submitLabel='Doğrula')}"></div>
+                    <div th:replace="~{licenses/_generate-form :: licenseGenerateForm(submitLabel='Lisans üret')}"></div>
                 </form>
             </div>
         </div>
