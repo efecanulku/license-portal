@@ -8,7 +8,6 @@ import com.avkar.licenseportal.dto.LicenseExpiryStatus;
 import com.avkar.licenseportal.dto.ProductLicenseCountDto;
 import com.avkar.licenseportal.entity.Dealer;
 import com.avkar.licenseportal.entity.License;
-import com.avkar.licenseportal.entity.User;
 import com.avkar.licenseportal.repository.LicenseRepository;
 import com.avkar.licenseportal.security.CurrentUserContext;
 import com.avkar.licenseportal.security.DealerAccessGuard;
