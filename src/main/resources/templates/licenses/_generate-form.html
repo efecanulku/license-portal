@@ -6,16 +6,36 @@
         </ul>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label" for="customerId">Kurum <span class="text-danger">*</span></label>
-        <select id="customerId" class="form-select" th:field="*{customerId}" required
-                th:classappend="${#fields.hasErrors('customerId')} ? 'is-invalid' : ''"
-                th:disabled="${#lists.isEmpty(customers)}">
-            <option value="" disabled selected th:if="${#lists.isEmpty(customers)}">Kurum yok</option>
-            <option value="" disabled selected th:if="${!#lists.isEmpty(customers)}">Kurum seçin</option>
-            <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name}"></option>
-        </select>
-        <div class="invalid-feedback" th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></div>
+    <div class="mb-3 position-relative" id="customerPicker" th:if="${!#lists.isEmpty(customers)}">
+        <label class="form-label" for="customerSearch">Kurum <span class="text-danger">*</span></label>
+        <input type="hidden" th:field="*{customerId}" id="customerId"/>
+        <input type="search" id="customerSearch" class="form-control"
+               th:classappend="${#fields.hasErrors('customerId')} ? 'is-invalid' : ''"
+               placeholder="Kurum adı veya vergi numarası ile ara ve seçin"
+               autocomplete="off"/>
+        <div id="customerSearchResults" class="list-group position-absolute w-100 shadow-sm d-none"
+             style="z-index: 1050; max-height: 14rem; overflow-y: auto;"></div>
+        <div class="form-text d-flex justify-content-between">
+            <span>Ad veya vergi numarasına göre arayın.</span>
+            <span id="customerSearchCount" class="text-secondary"></span>
+        </div>
+        <div id="customerSelected" class="small text-success mt-1 d-none"></div>
+        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></div>
+        <script th:inline="javascript">
+            window.LICENSE_PORTAL_CUSTOMERS = [
+                /*[# th:each="c : ${customers}"]*/
+                {
+                    id: /*[[${c.id}]]*/ 0,
+                    name: /*[[${c.name}]]*/ '',
+                    tax: /*[[${c.taxNumber}]]*/ ''
+                },
+                /*[/]*/
+            ];
+        </script>
+    </div>
+    <div class="mb-3" th:if="${#lists.isEmpty(customers)}">
+        <label class="form-label">Kurum</label>
+        <p class="text-secondary small mb-0">Önce kurum ekleyin.</p>
     </div>
 
     <div class="mb-3">
@@ -68,4 +88,6 @@
 
     <button class="btn btn-primary" type="submit" th:text="${submitLabel}"
             th:disabled="${#lists.isEmpty(products) or #lists.isEmpty(customers)}"></button>
+
+    <script th:src="@{/js/customer-select-search.js}" th:if="${!#lists.isEmpty(customers)}"></script>
 </div>

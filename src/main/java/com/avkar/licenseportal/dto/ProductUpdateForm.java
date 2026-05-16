@@ -19,6 +19,11 @@ public class ProductUpdateForm {
      */
     private String secret;
 
+    /**
+     * Secret değiştirilirken mevcut admin oturum şifresi (döküman §4.1.1).
+     */
+    private String adminPassword;
+
     public String getName() {
         return name;
     }
@@ -49,6 +54,14 @@ public class ProductUpdateForm {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
+    }
+
+    public void setAdminPassword(String adminPassword) {
+        this.adminPassword = adminPassword;
     }
 }
 

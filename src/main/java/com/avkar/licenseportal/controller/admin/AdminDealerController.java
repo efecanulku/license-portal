@@ -1,6 +1,7 @@
 package com.avkar.licenseportal.controller.admin;
 
 import com.avkar.licenseportal.dto.DealerForm;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.service.DealerService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,8 +28,11 @@ public class AdminDealerController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("dealers", dealerService.listAll());
+    public String list(@ModelAttribute SimplePageParams pageParams, Model model) {
+        var itemPage = dealerService.listPage(pageParams);
+        model.addAttribute("itemPage", itemPage);
+        model.addAttribute("dealers", itemPage.getContent());
+        model.addAttribute("pageParams", pageParams);
         return "admin/dealers/list";
     }
 

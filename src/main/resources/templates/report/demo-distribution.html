@@ -2,14 +2,14 @@
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
-    <title>Demo / üretim dağılımı</title>
+    <title>Demo / Aktif dağılımı</title>
 </head>
 <body>
-<div th:replace="~{common/layout :: layout(pageTitle='Demo / üretim dağılımı', content=~{::content})}">
+<div th:replace="~{common/layout :: layout(pageTitle='Demo / Aktif dağılımı', content=~{::content})}">
     <div th:fragment="content">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <h1 class="h4 mb-0">Demo / üretim dağılımı</h1>
+                <h1 class="h4 mb-0">Demo / Aktif dağılımı</h1>
                 <div class="text-secondary small" th:text="${subtitle}"></div>
             </div>
             <a class="btn btn-outline-secondary btn-sm" th:href="${reportsIndexUrl}">← Raporlar</a>
@@ -27,7 +27,7 @@
             <div class="col-md-4">
                 <div class="card border-success h-100">
                     <div class="card-body text-center">
-                        <div class="text-secondary small">Üretim (demo değil)</div>
+                        <div class="text-secondary small">Aktif (demo değil)</div>
                         <div class="fs-2 fw-semibold" th:text="${distribution.productionCount}">0</div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
         <div class="card mb-4" th:if="${distribution.total > 0}">
             <div class="card-body">
                 <div class="small text-secondary mb-2">Dağılım grafiği</div>
-                <canvas id="demoChart" height="120" aria-label="Demo ve üretim dağılımı"></canvas>
+                <canvas id="demoChart" height="120" aria-label="Demo ve aktif lisans dağılımı"></canvas>
             </div>
         </div>
 
@@ -58,7 +58,7 @@
                          th:text="|Demo %${distribution.demoPercent}|"></div>
                 </div>
                 <div class="small text-secondary mt-2"
-                     th:text="|Üretim: %${100 - distribution.demoPercent}|"></div>
+                     th:text="|Aktif: %${100 - distribution.demoPercent}|"></div>
             </div>
         </div>
         <p th:if="${distribution.total == 0}" class="text-secondary">Henüz lisans kaydı yok.</p>
@@ -73,7 +73,7 @@
                 new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Demo', 'Üretim'],
+                        labels: ['Demo', 'Aktif'],
                         datasets: [{
                             data: [demo, production],
                             backgroundColor: ['#ffc107', '#198754']

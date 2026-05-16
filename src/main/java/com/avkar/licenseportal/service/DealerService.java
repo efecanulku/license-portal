@@ -1,9 +1,13 @@
 package com.avkar.licenseportal.service;
 
 import com.avkar.licenseportal.dto.DealerForm;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.entity.Dealer;
 import com.avkar.licenseportal.repository.DealerRepository;
 import com.avkar.licenseportal.security.DealerAccessGuard;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,21 @@ public class DealerService {
     public List<Dealer> listAll() {
         dealerAccessGuard.requireAdmin();
         return dealerRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Dealer> listPage(SimplePageParams params) {
+        dealerAccessGuard.requireAdmin();
+        PageRequest pageable = PageRequest.of(
+                params.getPage(),
+                SimplePageParams.PAGE_SIZE,
+                Sort.by(Sort.Direction.ASC, "name")
+        );
+        String q = params.normalizedQuery();
+        if (q == null) {
+            return dealerRepository.findAllByOrderByNameAsc(pageable);
+        }
+        return dealerRepository.searchPage(q, pageable);
     }
 
     public Dealer getById(Long id) {

@@ -1,6 +1,7 @@
 package com.avkar.licenseportal.controller.dealer;
 
 import com.avkar.licenseportal.dto.CustomerForm;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.entity.Customer;
 import com.avkar.licenseportal.service.CustomerService;
 import jakarta.validation.Valid;
@@ -28,8 +29,11 @@ public class DealerCustomerController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("customers", customerService.listForCurrentBayi());
+    public String list(@ModelAttribute SimplePageParams pageParams, Model model) {
+        var itemPage = customerService.listPageForCurrentBayi(pageParams);
+        model.addAttribute("itemPage", itemPage);
+        model.addAttribute("customers", itemPage.getContent());
+        model.addAttribute("pageParams", pageParams);
         return "dealer/customers/list";
     }
 

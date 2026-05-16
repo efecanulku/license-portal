@@ -3,9 +3,16 @@ package com.avkar.licenseportal.service;
 import com.avkar.licenseportal.dto.ProductCreateForm;
 import com.avkar.licenseportal.dto.ProductUpdateForm;
 import com.avkar.licenseportal.entity.Product;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.repository.ProductRepository;
+import com.avkar.licenseportal.repository.UserRepository;
+import com.avkar.licenseportal.security.CurrentUserContext;
 import com.avkar.licenseportal.security.DealerAccessGuard;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,20 +25,39 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final AesEncryptionService aesEncryptionService;
     private final DealerAccessGuard dealerAccessGuard;
+    private final CurrentUserContext currentUserContext;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public ProductService(
             ProductRepository productRepository,
             AesEncryptionService aesEncryptionService,
-            DealerAccessGuard dealerAccessGuard
+            DealerAccessGuard dealerAccessGuard,
+            CurrentUserContext currentUserContext,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.productRepository = productRepository;
         this.aesEncryptionService = aesEncryptionService;
         this.dealerAccessGuard = dealerAccessGuard;
+        this.currentUserContext = currentUserContext;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Product> listAll() {
         dealerAccessGuard.requireAdmin();
         return productRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Product> listPage(SimplePageParams params) {
+        dealerAccessGuard.requireAdmin();
+        String q = params.normalizedQuery();
+        if (q == null) {
+            return productRepository.findAllByOrderByNameAsc(pageable(params));
+        }
+        return productRepository.searchPage(q, pageable(params));
     }
 
     public Product getById(Long id) {
@@ -67,6 +93,7 @@ public class ProductService {
         p.setCode(form.getCode().trim());
         p.setDescription(form.getDescription());
         if (form.getSecret() != null && !form.getSecret().isBlank()) {
+            verifyAdminPasswordForSecretChange(form.getAdminPassword());
             p.setSecretKeyEnc(aesEncryptionService.encryptToBase64(form.getSecret()));
         }
         p.setUpdatedAt(LocalDateTime.now());
@@ -81,6 +108,26 @@ public class ProductService {
         p.setActive(!current);
         p.setUpdatedAt(LocalDateTime.now());
         productRepository.save(p);
+    }
+
+    private void verifyAdminPasswordForSecretChange(String adminPassword) {
+        if (adminPassword == null || adminPassword.isBlank()) {
+            throw new IllegalArgumentException("Secret değiştirmek için mevcut şifrenizi girin.");
+        }
+        var user = currentUserContext.requireUser();
+        var managed = userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalStateException("Kullanıcı bulunamadı."));
+        if (!passwordEncoder.matches(adminPassword, managed.getPasswordHash())) {
+            throw new IllegalArgumentException("Mevcut şifre hatalı.");
+        }
+    }
+
+    private static PageRequest pageable(SimplePageParams params) {
+        return PageRequest.of(
+                params.getPage(),
+                SimplePageParams.PAGE_SIZE,
+                Sort.by(Sort.Direction.ASC, "name")
+        );
     }
 }
 

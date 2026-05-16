@@ -7,10 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "customers")
@@ -40,6 +44,14 @@ public class Customer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_dealer_id")
     private Dealer createdByDealer;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "customer_dealers",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "dealer_id")
+    )
+    private Set<Dealer> linkedDealers = new HashSet<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -110,5 +122,13 @@ public class Customer {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Set<Dealer> getLinkedDealers() {
+        return linkedDealers;
+    }
+
+    public void setLinkedDealers(Set<Dealer> linkedDealers) {
+        this.linkedDealers = linkedDealers;
     }
 }

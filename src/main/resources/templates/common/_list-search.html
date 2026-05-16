@@ -1,0 +1,21 @@
+<form xmlns:th="http://www.thymeleaf.org"
+      th:fragment="listSearch(formAction, pageParams, dealerId)"
+      class="card card-body mb-3"
+      method="get"
+      th:action="${formAction}">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-6">
+            <label class="form-label" for="listSearchQ">Ara</label>
+            <input id="listSearchQ" type="search" name="q" class="form-control"
+                   th:value="${pageParams != null ? pageParams.q : ''}"
+                   placeholder="Ad, kod, vergi no veya iletişim bilgisi"/>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-primary" type="submit">Ara</button>
+            <a class="btn btn-link btn-sm"
+               th:if="${pageParams != null and !#strings.isEmpty(pageParams.q)}"
+               th:href="|${formAction}${dealerId != null ? '?dealerId=' + dealerId : ''}|">Temizle</a>
+        </div>
+    </div>
+    <input type="hidden" name="dealerId" th:if="${dealerId != null}" th:value="${dealerId}"/>
+</form>

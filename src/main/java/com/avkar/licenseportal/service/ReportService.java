@@ -48,11 +48,8 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public List<DealerLicenseCountDto> dealerLicenseCountsForCurrentBayi() {
-        User user = currentUserContext.requireUser();
         Long dealerId = dealerAccessGuard.requireCurrentDealerId();
-        List<DealerLicenseCountDto> rows = licenseRepository.countLicensesByDealerForBayiUser(
-                user.getId(), dealerId
-        );
+        List<DealerLicenseCountDto> rows = licenseRepository.countLicensesByDealerForBayiDealer(dealerId);
         if (!rows.isEmpty()) {
             return rows;
         }
@@ -68,9 +65,8 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public Page<License> expiringLicensesForCurrentBayi(ExpiringLicenseFilter filter) {
-        User user = currentUserContext.requireUser();
         Long dealerId = dealerAccessGuard.requireCurrentDealerId();
-        return searchExpiring(user.getId(), dealerId, filter);
+        return searchExpiring(null, dealerId, filter);
     }
 
     @Transactional(readOnly = true)
@@ -87,9 +83,8 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public List<CustomerLicenseSummaryDto> customerLicenseSummaryForCurrentBayi() {
-        User user = currentUserContext.requireUser();
         Long dealerId = dealerAccessGuard.requireCurrentDealerId();
-        return licenseRepository.summarizeLicensesByCustomerForBayiUser(user.getId(), dealerId);
+        return licenseRepository.summarizeLicensesByCustomerForBayiDealer(dealerId);
     }
 
     @Transactional(readOnly = true)
@@ -103,9 +98,9 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public LicenseDemoDistributionDto demoDistributionForCurrentBayi() {
-        User user = currentUserContext.requireUser();
-        long demo = licenseRepository.countDemoLicensesForBayiUser(user.getId());
-        long production = licenseRepository.countProductionLicensesForBayiUser(user.getId());
+        Long dealerId = dealerAccessGuard.requireCurrentDealerId();
+        long demo = licenseRepository.countDemoLicensesForBayiDealer(dealerId);
+        long production = licenseRepository.countProductionLicensesForBayiDealer(dealerId);
         return new LicenseDemoDistributionDto(demo, production);
     }
 
@@ -117,9 +112,8 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public long countExpiringSoonForCurrentBayi(int withinDays) {
-        User user = currentUserContext.requireUser();
         Long dealerId = dealerAccessGuard.requireCurrentDealerId();
-        return countExpiringLicenses(user.getId(), dealerId, withinDays);
+        return countExpiringLicenses(null, dealerId, withinDays);
     }
 
     private long countExpiringLicenses(Long userId, Long dealerId, int withinDays) {

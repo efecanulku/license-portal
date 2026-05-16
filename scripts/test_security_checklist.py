@@ -16,14 +16,14 @@ ADMIN_PATHS = [
     "/admin/products",
     "/admin/dealers",
     "/admin/licenses",
-    "/admin/reports",
-    "/admin/reports/dealer-count",
+    "/reports",
+    "/reports/dealer-count",
 ]
 
 DEALER_PATHS = [
     "/dealer/customers",
     "/dealer/licenses",
-    "/dealer/reports",
+    "/reports",
 ]
 
 SECRET_MARKERS = [
@@ -140,9 +140,9 @@ def main():
     ok("dealer ürün ekleme engelli", denied(code, body), f"HTTP {code}")
 
     print("\n[6] Rapor izolasyonu")
-    code, _, body = fetch(dealer, "/admin/reports/expiring")
+    code, _, body = fetch(dealer, "/reports/expiring")
     ok("dealer admin rapor engelli", denied(code, body), f"HTTP {code}")
-    code2, _, body2 = fetch(dealer, "/dealer/reports")
+    code2, _, body2 = fetch(dealer, "/reports")
     ok("dealer kendi raporları açılır", code2 == 200 and "Raporlar" in body2)
 
     print(f"\n=== Sonuç: {PASS} geçti, {FAIL} kaldı ===")

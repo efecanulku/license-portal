@@ -79,13 +79,13 @@ def main():
     )
 
     print("\n[4] Demo dağılımı Chart.js")
-    code, body = fetch(admin, "/admin/reports/demo-distribution")
+    code, body = fetch(admin, "/reports/demo-distribution")
     ok(
         "demo chart admin",
         code == 200 and "chart.js" in body.lower() and "demoChart" in body,
         f"HTTP {code}",
     )
-    code, body = fetch(dealer, "/dealer/reports/demo-distribution")
+    code, body = fetch(dealer, "/reports/demo-distribution")
     ok(
         "demo chart dealer",
         code == 200 and "chart.js" in body.lower() and "demoChart" in body,
@@ -97,7 +97,7 @@ def main():
         "/admin/licenses",
         "/dealer/licenses",
         "/account/password",
-        "/admin/reports/demo-distribution",
+        "/reports/demo-distribution",
     ):
         _, body = fetch(admin, path)
         ok(f"no motion tag {path}", "<motion" not in body.lower())

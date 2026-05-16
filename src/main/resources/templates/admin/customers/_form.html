@@ -1,19 +1,27 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="customerForm(submitLabel)" th:object="${form}">
     <div th:if="${showDealerSelect}" class="mb-3">
-        <label class="form-label" for="createdByDealerId">Oluşturan bayi (opsiyonel)</label>
+        <label class="form-label" for="createdByDealerId">OluÅŸturan bayi (opsiyonel)</label>
         <select id="createdByDealerId" class="form-select" th:field="*{createdByDealerId}">
-            <option value="">— Seçilmedi —</option>
+            <option value="">â€” SeÃ§ilmedi â€”</option>
             <option th:each="d : ${dealers}" th:value="${d.id}" th:text="${d.name}"></option>
         </select>
     </div>
     <div th:if="${createdByDealerName != null}" class="mb-3">
-        <label class="form-label">Oluşturan bayi</label>
-        
+        <label class="form-label">OluÅŸturan bayi</label>
         <div class="form-control-plaintext" th:text="${createdByDealerName}"></div>
     </div>
+    <div th:if="${showLinkedDealers}" class="mb-3">
+        <label class="form-label">BaÄŸlÄ± bayiler</label>
+        <div class="form-text mb-2">Kurum birden fazla bayiye baÄŸlanabilir.</div>
+        <div th:each="d : ${dealers}" class="form-check">
+            <input class="form-check-input" type="checkbox" name="linkedDealerIds" th:value="${d.id}"
+                   th:checked="${form.linkedDealerIds != null and #lists.contains(form.linkedDealerIds, d.id)}"/>
+            <label class="form-check-label" th:text="${d.name}"></label>
+        </div>
+    </div>
     <div class="mb-3">
-        <label class="form-label" for="name">Kurum adı</label>
-        <input id="name" class="form-control" th:field="*{name}" placeholder="Örn: ABC Hastanesi"/>
+        <label class="form-label" for="name">Kurum adÄ±</label>
+        <input id="name" class="form-control" th:field="*{name}" placeholder="Ã–rn: ABC Hastanesi"/>
         <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
     </div>
     <div class="mb-3">
@@ -25,18 +33,18 @@
         <textarea id="address" class="form-control" rows="2" th:field="*{address}" placeholder="Opsiyonel"></textarea>
     </div>
     <div class="mb-3">
-        <label class="form-label" for="contactName">Yetkili kişi</label>
+        <label class="form-label" for="contactName">Yetkili kiÅŸi</label>
         <input id="contactName" class="form-control" th:field="*{contactName}" placeholder="Opsiyonel"/>
     </div>
     <div class="mb-3">
-        <label class="form-label" for="contactEmail">İletişim e-posta</label>
+        <label class="form-label" for="contactEmail">Ä°letiÅŸim e-posta</label>
         <input id="contactEmail" type="email" class="form-control" th:field="*{contactEmail}" placeholder="Opsiyonel"/>
         <div class="text-danger small" th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}"></div>
     </div>
     <div class="mb-3">
-        <label class="form-label" for="contactPhone">İletişim telefon</label>
+        <label class="form-label" for="contactPhone">Ä°letiÅŸim telefon</label>
         <input id="contactPhone" class="form-control" th:field="*{contactPhone}" placeholder="Opsiyonel"/>
     </div>
     <button class="btn btn-primary" type="submit" th:text="${submitLabel}"></button>
-    <a class="btn btn-outline-secondary ms-2" th:href="${cancelUrl}">İptal</a>
+    <a class="btn btn-outline-secondary ms-2" th:href="${cancelUrl}">Ä°ptal</a>
 </div>

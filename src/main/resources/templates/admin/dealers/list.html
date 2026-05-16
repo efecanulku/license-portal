@@ -19,6 +19,11 @@
         <div th:if="${flashSuccess}" class="alert alert-success" th:text="${flashSuccess}"></div>
         <div th:if="${flashError}" class="alert alert-danger" th:text="${flashError}"></div>
 
+        <div th:replace="~{common/_list-search :: listSearch(formAction='/admin/dealers', pageParams=${pageParams}, dealerId=null)}"></div>
+
+        <p class="text-secondary small mb-2" th:if="${itemPage != null}"
+           th:text="|${itemPage.totalElements} kayıt|"></p>
+
         <div class="card">
             <div class="table-responsive">
                 <table class="table table-striped table-hover mb-0 align-middle">
@@ -66,6 +71,7 @@
                 </table>
             </div>
         </div>
+        <div th:replace="~{common/_simple-pagination :: simplePagination(page=${itemPage}, formAction='/admin/dealers', dealerId=null, pageParams=${pageParams})}"></div>
     </div>
 </div>
 </body>

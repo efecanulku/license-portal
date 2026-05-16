@@ -16,9 +16,9 @@
             <a class="btn btn-outline-secondary btn-sm" th:href="${reportsIndexUrl}">← Raporlar</a>
         </div>
 
-        <div th:replace="~{reports/_expiring-filters :: expiringFilters}"></div>
-        <div th:replace="~{reports/_expiring-table :: expiringTable}"></div>
-        <div th:replace="~{reports/_pagination :: reportPagination(page=${licensePage}, filter=${filter}, formAction=${formAction})}"></div>
+        <div th:replace="~{report/_expiring-filters :: expiringFilters}"></div>
+        <div th:replace="~{report/_expiring-table :: expiringTable}"></div>
+        <div th:replace="~{report/_pagination :: reportPagination(page=${licensePage}, filter=${filter}, formAction=${formAction})}"></div>
     </div>
 </div>
 </body>

@@ -21,7 +21,7 @@
 
         <form class="card card-body mb-3" method="get" th:action="@{/admin/customers}">
             <div class="row g-2 align-items-end">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label" for="dealerId">Bayi filtresi</label>
                     <select id="dealerId" name="dealerId" class="form-select">
                         <option value="" th:selected="${selectedDealerId == null}">Tümü</option>
@@ -29,11 +29,20 @@
                                 th:selected="${selectedDealerId != null and selectedDealerId == d.id}"></option>
                     </select>
                 </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="listSearchQ">Ara</label>
+                    <input id="listSearchQ" type="search" name="q" class="form-control"
+                           th:value="${pageParams != null ? pageParams.q : ''}"
+                           placeholder="Kurum adı, vergi no veya yetkili"/>
+                </div>
                 <div class="col-md-3">
                     <button class="btn btn-outline-primary" type="submit">Filtrele</button>
                 </div>
             </div>
         </form>
+
+        <p class="text-secondary small mb-2" th:if="${itemPage != null}"
+           th:text="|${itemPage.totalElements} kayıt|"></p>
 
         <div class="card">
             <div class="table-responsive">
@@ -65,6 +74,7 @@
                 </table>
             </div>
         </div>
+        <div th:replace="~{common/_simple-pagination :: simplePagination(page=${itemPage}, formAction='/admin/customers', dealerId=${selectedDealerId}, pageParams=${pageParams})}"></div>
     </div>
 </div>
 </body>

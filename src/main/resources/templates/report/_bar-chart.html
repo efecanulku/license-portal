@@ -1,0 +1,33 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="barChart(canvasId, chartTitle)">
+    <div class="card mb-4" th:if="${showChart}">
+        <div class="card-body">
+            <div class="small text-secondary mb-2" th:text="${chartTitle} ?: 'Dağılım grafiği'">Dağılım grafiği</div>
+            <canvas th:id="${canvasId}" height="140" th:attr="aria-label=${chartTitle}"></canvas>
+        </div>
+    </div>
+    <script th:if="${showChart}" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+    <script th:if="${showChart}" th:inline="javascript">
+        (function () {
+            const labels = /*[[${chartLabels}]]*/ [];
+            const values = /*[[${chartValues}]]*/ [];
+            const ctx = document.getElementById(/*[[${canvasId}]]*/ 'reportBarChart');
+            if (!ctx || typeof Chart === 'undefined' || !labels.length) return;
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Lisans sayısı',
+                        data: values,
+                        backgroundColor: '#0d6efd'
+                    }]
+                },
+                options: {
+                    plugins: {legend: {display: false}},
+                    scales: {y: {beginAtZero: true, ticks: {precision: 0}}},
+                    maintainAspectRatio: true
+                }
+            });
+        })();
+    </script>
+</div>

@@ -1,6 +1,7 @@
 package com.avkar.licenseportal.controller.admin;
 
 import com.avkar.licenseportal.dto.CustomerForm;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.service.CustomerService;
 import com.avkar.licenseportal.service.DealerService;
 import jakarta.validation.Valid;
@@ -31,10 +32,17 @@ public class AdminCustomerController {
     }
 
     @GetMapping
-    public String list(@RequestParam(required = false) Long dealerId, Model model) {
-        model.addAttribute("customers", customerService.listForAdmin(dealerId));
+    public String list(
+            @RequestParam(required = false) Long dealerId,
+            @ModelAttribute SimplePageParams pageParams,
+            Model model
+    ) {
+        var itemPage = customerService.listPageForAdmin(dealerId, pageParams);
+        model.addAttribute("itemPage", itemPage);
+        model.addAttribute("customers", itemPage.getContent());
         model.addAttribute("dealers", dealerService.listAll());
         model.addAttribute("selectedDealerId", dealerId);
+        model.addAttribute("pageParams", pageParams);
         return "admin/customers/list";
     }
 
@@ -42,6 +50,7 @@ public class AdminCustomerController {
     public String newForm(Model model) {
         model.addAttribute("dealers", dealerService.listAll());
         model.addAttribute("showDealerSelect", true);
+        model.addAttribute("showLinkedDealers", true);
         model.addAttribute("cancelUrl", "/admin/customers");
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new CustomerForm());
@@ -71,6 +80,8 @@ public class AdminCustomerController {
         try {
             var customer = customerService.getForAdmin(id);
             model.addAttribute("showDealerSelect", false);
+            model.addAttribute("showLinkedDealers", true);
+            model.addAttribute("dealers", dealerService.listAll());
             model.addAttribute("createdByDealerName",
                     customer.getCreatedByDealer() != null ? customer.getCreatedByDealer().getName() : "—");
             if (!model.containsAttribute("form")) {
@@ -120,6 +131,11 @@ public class AdminCustomerController {
         if (customer.getCreatedByDealer() != null) {
             form.setCreatedByDealerId(customer.getCreatedByDealer().getId());
         }
+        form.setLinkedDealerIds(
+                customer.getLinkedDealers().stream()
+                        .map(d -> d.getId())
+                        .toList()
+        );
         return form;
     }
 }

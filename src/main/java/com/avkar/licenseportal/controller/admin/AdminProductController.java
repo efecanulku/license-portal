@@ -2,6 +2,7 @@ package com.avkar.licenseportal.controller.admin;
 
 import com.avkar.licenseportal.dto.ProductCreateForm;
 import com.avkar.licenseportal.dto.ProductUpdateForm;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -29,8 +30,11 @@ public class AdminProductController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("products", productService.listAll());
+    public String list(@ModelAttribute SimplePageParams pageParams, Model model) {
+        var itemPage = productService.listPage(pageParams);
+        model.addAttribute("itemPage", itemPage);
+        model.addAttribute("products", itemPage.getContent());
+        model.addAttribute("pageParams", pageParams);
         return "admin/products/list";
     }
 
@@ -100,6 +104,10 @@ public class AdminProductController {
 
         try {
             productService.update(id, form);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("flashError", e.getMessage());
+            redirectAttributes.addFlashAttribute("form", form);
+            return "redirect:/admin/products/" + id + "/edit";
         } catch (DataIntegrityViolationException e) {
             redirectAttributes.addFlashAttribute("flashError", "Ürün kodu zaten kullanılıyor.");
             redirectAttributes.addFlashAttribute("form", form);

@@ -41,7 +41,7 @@ public class LicenseFormService {
         dealerAccessGuard.requireAdmin();
         return new LicenseFormOptions(
                 productRepository.findByActiveTrueOrderByNameAsc(),
-                customerRepository.findAllWithOptionalDealerFilter(null)
+                customerRepository.findAllWithFilters(null, null)
         );
     }
 
@@ -50,7 +50,7 @@ public class LicenseFormService {
         Long dealerId = dealerAccessGuard.requireCurrentDealerId();
         return new LicenseFormOptions(
                 permissionRepository.findActiveProductsByDealerId(dealerId),
-                customerRepository.findByCreatedByDealerId(dealerId)
+                customerRepository.findByLinkedDealerId(dealerId, null)
         );
     }
 
@@ -82,8 +82,9 @@ public class LicenseFormService {
         if (!permissionRepository.existsByDealer_IdAndProduct_Id(dealerId, form.getProductId())) {
             throw new AccessDeniedException("Bu ürün için yetkiniz yok.");
         }
-        customerRepository.findByIdAndCreatedByDealerId(form.getCustomerId(), dealerId)
-                .orElseThrow(() -> new NoSuchElementException("Customer not found for dealer"));
+        if (!customerRepository.existsByIdAndLinkedDealers_Id(form.getCustomerId(), dealerId)) {
+            throw new NoSuchElementException("Customer not found for dealer");
+        }
     }
 
 }

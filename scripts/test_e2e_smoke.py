@@ -122,7 +122,7 @@ def main():
         ("/admin/dealers", ["Bayiler"]),
         ("/admin/customers", ["Kurum"]),
         ("/admin/licenses", ["Lisans"]),
-        ("/admin/reports", ["Raporlar", "Bayi bazlı"]),
+        ("/reports", ["Raporlar", "Bayi bazlı"]),
     ]
     for path, markers in admin_pages:
         _, _, body = fetch(admin, path)
@@ -141,7 +141,7 @@ def main():
     dealer_pages = [
         ("/dealer/customers", ["Kurum"]),
         ("/dealer/licenses", ["Lisans"]),
-        ("/dealer/reports", ["Raporlar"]),
+        ("/reports", ["Raporlar"]),
     ]
     for path, markers in dealer_pages:
         _, _, body = fetch(dealer, path)

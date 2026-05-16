@@ -30,8 +30,16 @@
 
                 <div class="mb-3">
                     <label class="form-label">Secret</label>
-                    <input class="form-control" th:field="*{secret}" placeholder="•••••••• (değiştirmek için yeni secret gir)" />
-                    <div class="form-text">Boş bırakırsan mevcut secret korunur.</div>
+                    <input class="form-control" th:field="*{secret}" id="productSecret"
+                           placeholder="•••••••• (değiştirmek için yeni secret gir)" autocomplete="off"/>
+                    <div class="form-text">Boş bırakırsan mevcut secret korunur. Değiştirirsen aşağıdaki şifre zorunludur.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="adminPassword">Mevcut şifreniz</label>
+                    <input id="adminPassword" type="password" class="form-control" th:field="*{adminPassword}"
+                           autocomplete="current-password"
+                           placeholder="Secret değiştiriyorsanız zorunlu"/>
                 </div>
 
                 <button class="btn btn-primary" type="submit">Güncelle</button>

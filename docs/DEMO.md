@@ -122,7 +122,7 @@ Amaç: Yetkili ürün, kendi kurumu, kendi lisansı ve kendi raporu.
 | B4.2 | Müşteri bazlı özet | Kendi kurumlarınız |
 | B4.3 | Demo / üretim dağılımı | Sadece sizin ürettikleriniz |
 | B4.4 | Süresi dolan / yaklaşan | “Yalnızca sizin ürettikleriniz” |
-| B4.5 | `/admin/reports/product-count` | Yetkisiz |
+| B4.5 | `/reports/product-count` | Yetkisiz |
 
 ### B5. Negatif — başkasının verisi
 

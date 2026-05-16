@@ -171,14 +171,10 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             )
             FROM License l
             JOIN l.dealer d
-            JOIN l.createdBy u
-            WHERE u.id = :userId AND d.id = :dealerId
+            WHERE d.id = :dealerId
             GROUP BY d.id, d.name
             """)
-    List<DealerLicenseCountDto> countLicensesByDealerForBayiUser(
-            @Param("userId") Long userId,
-            @Param("dealerId") Long dealerId
-    );
+    List<DealerLicenseCountDto> countLicensesByDealerForBayiDealer(@Param("dealerId") Long dealerId);
 
     @Query(
             value = """
@@ -244,16 +240,11 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             )
             FROM License l
             JOIN l.customer c
-            JOIN l.createdBy u
-            WHERE u.id = :userId
-              AND c.createdByDealer.id = :dealerId
+            WHERE l.dealer.id = :dealerId
             GROUP BY c.id, c.name
             ORDER BY COUNT(l) DESC, c.name ASC
             """)
-    List<CustomerLicenseSummaryDto> summarizeLicensesByCustomerForBayiUser(
-            @Param("userId") Long userId,
-            @Param("dealerId") Long dealerId
-    );
+    List<CustomerLicenseSummaryDto> summarizeLicensesByCustomerForBayiDealer(@Param("dealerId") Long dealerId);
 
     @Query("""
             SELECT COUNT(l) FROM License l
@@ -269,17 +260,15 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
 
     @Query("""
             SELECT COUNT(l) FROM License l
-            JOIN l.createdBy u
-            WHERE u.id = :userId
+            WHERE l.dealer.id = :dealerId
               AND l.isDemo = true
             """)
-    long countDemoLicensesForBayiUser(@Param("userId") Long userId);
+    long countDemoLicensesForBayiDealer(@Param("dealerId") Long dealerId);
 
     @Query("""
             SELECT COUNT(l) FROM License l
-            JOIN l.createdBy u
-            WHERE u.id = :userId
+            WHERE l.dealer.id = :dealerId
               AND (l.isDemo = false OR l.isDemo IS NULL)
             """)
-    long countProductionLicensesForBayiUser(@Param("userId") Long userId);
+    long countProductionLicensesForBayiDealer(@Param("dealerId") Long dealerId);
 }

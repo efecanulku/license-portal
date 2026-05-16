@@ -20,12 +20,12 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
+        if (currentUserContext.isBayi()) {
+            return "redirect:/dealer/dashboard";
+        }
         if (currentUserContext.isAdmin()) {
             model.addAttribute("expiringSoonCount", reportService.countExpiringSoonForAdmin(EXPIRING_SOON_DAYS));
-            model.addAttribute("expiringReportUrl", "/admin/reports/expiring");
-        } else if (currentUserContext.isBayi()) {
-            model.addAttribute("expiringSoonCount", reportService.countExpiringSoonForCurrentBayi(EXPIRING_SOON_DAYS));
-            model.addAttribute("expiringReportUrl", "/dealer/reports/expiring");
+            model.addAttribute("expiringReportUrl", "/reports/expiring");
         }
         model.addAttribute("expiringSoonDays", EXPIRING_SOON_DAYS);
         return "home";

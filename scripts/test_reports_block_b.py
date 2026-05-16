@@ -64,9 +64,9 @@ def main():
 
     print("[1] Admin raporları")
     paths = [
-        ("/admin/reports/product-count", ["Ürün bazlı", "Lisans sayısı"]),
-        ("/admin/reports/customer-summary", ["Müşteri bazlı", "Kurum"]),
-        ("/admin/reports/demo-distribution", ["Demo", "üretim"]),
+        ("/reports/product-count", ["Ürün bazlı", "Lisans sayısı"]),
+        ("/reports/customer-summary", ["Müşteri bazlı", "Kurum"]),
+        ("/reports/demo-distribution", ["Demo", "Aktif"]),
     ]
     for path, markers in paths:
         code, body = fetch(admin, path)
@@ -74,21 +74,25 @@ def main():
 
     print("\n[2] Bayi raporları")
     paths_d = [
-        ("/dealer/reports/customer-summary", ["Müşteri bazlı", "Kurum"]),
-        ("/dealer/reports/demo-distribution", ["Demo", "Toplam"]),
+        ("/reports/customer-summary", ["Müşteri bazlı", "Kurum"]),
+        ("/reports/demo-distribution", ["Demo", "Toplam"]),
     ]
     for path, markers in paths_d:
         code, body = fetch(dealer, path)
         ok(f"dealer {path}", code == 200 and all(m in body for m in markers), f"HTTP {code}")
 
     print("\n[3] Bayi ürün raporu engeli")
-    code, body = fetch(dealer, "/admin/reports/product-count")
+    code, body = fetch(dealer, "/reports/product-count")
     ok("dealer product-count engelli", denied(code, body) or code == 403)
 
-    print("\n[4] Rapor index linkleri")
-    _, body = fetch(admin, "/admin/reports")
+    print("\n[4] Eski URL yönlendirme")
+    code, body = fetch(admin, "/admin/reports/demo-distribution")
+    ok("legacy /admin/reports → /reports", code == 200 and "chart.js" in body.lower())
+
+    print("\n[5] Rapor index linkleri")
+    _, body = fetch(admin, "/reports")
     ok("admin index 5 rapor", body.count("list-group-item") >= 5)
-    _, body2 = fetch(dealer, "/dealer/reports")
+    _, body2 = fetch(dealer, "/reports")
     ok("dealer index 4 rapor", body2.count("list-group-item") >= 4)
 
     print(f"\n=== Sonuç: {PASS} geçti, {FAIL} kaldı ===")

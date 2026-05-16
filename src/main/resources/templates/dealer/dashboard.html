@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Bayi paneli</title>
+</head>
+<body>
+<div th:replace="~{common/layout :: layout(pageTitle='Bayi paneli', content=~{::content})}">
+    <div th:fragment="content">
+        <div class="p-4 p-md-5 bg-white border rounded-3 mb-4">
+            <h1 class="h3 mb-2">Bayi paneli</h1>
+            <p class="text-secondary mb-0">
+                Hoş geldiniz,
+                <span class="fw-semibold" th:text="${#authentication.name}">bayi</span>.
+                Aşağıdaki kartlardan modüllere geçebilirsiniz.
+            </p>
+        </div>
+
+        <div th:if="${expiringSoonCount != null and expiringSoonCount > 0}"
+             class="alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4"
+             role="alert">
+            <div>
+                Önümüzdeki <span th:text="${expiringSoonDays}">30</span> gün içinde süresi dolmuş veya dolmak üzere olan
+                <strong th:text="${expiringSoonCount}">0</strong> lisans var.
+            </div>
+            <a class="btn btn-sm btn-warning" th:href="${expiringReportUrl}">Süre raporuna git</a>
+        </div>
+
+        <h2 class="h5 mb-3">Modüller</h2>
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-4">
+                <a class="card text-decoration-none h-100" th:href="@{/dealer/customers}">
+                    <div class="card-body">
+                        <div class="fw-semibold text-body">Kurumlarım</div>
+                        <div class="small text-secondary">Kurum ekle / düzenle</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a class="card text-decoration-none h-100" th:href="@{/dealer/licenses}">
+                    <div class="card-body">
+                        <div class="fw-semibold text-body">Lisanslarım</div>
+                        <div class="small text-secondary">Ürettiğiniz lisanslar</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a class="card text-decoration-none h-100 border-primary" th:href="@{/dealer/licenses/new}">
+                    <div class="card-body">
+                        <div class="fw-semibold text-primary">Lisans üret</div>
+                        <div class="small text-secondary">Yetkili ürünler için</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a class="card text-decoration-none h-100" th:href="@{/reports}">
+                    <div class="card-body">
+                        <div class="fw-semibold text-body">Raporlar</div>
+                        <div class="small text-secondary">Özet ve süre takibi</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,18 @@
+<nav xmlns:th="http://www.thymeleaf.org"
+     th:fragment="simplePagination(page, formAction, dealerId, pageParams)"
+     th:if="${page != null and page.totalPages > 1}" class="mt-3" aria-label="Sayfalama">
+    <ul class="pagination pagination-sm justify-content-center mb-0">
+        <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+            <a class="page-link"
+               th:href="|${formAction}?page=${page.number - 1}${dealerId != null ? '&dealerId=' + dealerId : ''}${pageParams != null and !#strings.isEmpty(pageParams.q) ? '&q=' + pageParams.q : ''}|">Önceki</a>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link"
+                  th:text="|Sayfa ${page.number + 1} / ${page.totalPages} (${page.totalElements} kayıt)|"></span>
+        </li>
+        <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+            <a class="page-link"
+               th:href="|${formAction}?page=${page.number + 1}${dealerId != null ? '&dealerId=' + dealerId : ''}${pageParams != null and !#strings.isEmpty(pageParams.q) ? '&q=' + pageParams.q : ''}|">Sonraki</a>
+        </li>
+    </ul>
+</nav>

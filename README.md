@@ -103,10 +103,10 @@ Güvenlik kontrol listesi (manuel + otomatik): [`docs/SECURITY_CHECKLIST.md`](do
 ## Proje yapısı (özet)
 
 ```
-src/main/java/.../controller/admin|dealer/
+src/main/java/.../controller/admin|dealer|report/
 src/main/java/.../service/
 src/main/java/.../repository/
-src/main/resources/templates/
+src/main/resources/templates/admin|dealer|report|common/
 src/main/resources/db/migration/
 scripts/                    # Akış testleri + run-local.ps1
 ```
