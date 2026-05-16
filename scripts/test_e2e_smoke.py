@@ -68,6 +68,48 @@ def select_options(html: str, field_id: str):
     return re.findall(r'<option[^>]*value="(\d+)"[^>]*>', block.group(1))
 
 
+def license_customer_ids(html: str):
+    """Kurum arama (LICENSE_PORTAL_CUSTOMERS); bayi id'lerini karıştırmaz."""
+    block = re.search(
+        r"LICENSE_PORTAL_CUSTOMERS\s*=\s*\[(.*?)\];",
+        html,
+        re.DOTALL,
+    )
+    if block:
+        ids = re.findall(
+            r"id:\s*(\d+),\s*name:\s*[^,]+,\s*tax:",
+            block.group(1),
+        )
+        if not ids:
+            ids = re.findall(
+                r"id:\s*(\d+),\s*name:\s*[^,]+,\s*dealers:",
+                block.group(1),
+            )
+        if ids:
+            return ids
+    return select_options(html, "customerId")
+
+
+def license_dealer_id_for_customer(html: str, customer_id: str):
+    """Çoklu bayi bağlı kurumda admin POST için ilk uygun bayi."""
+    block = re.search(
+        r"LICENSE_PORTAL_CUSTOMERS\s*=\s*\[(.*?)\];",
+        html,
+        re.DOTALL,
+    )
+    if not block:
+        return None
+    cust = re.search(
+        rf"id:\s*{re.escape(customer_id)},\s*name:.*?dealers:\s*\[(.*?)\]",
+        block.group(1),
+        re.DOTALL,
+    )
+    if not cust:
+        return None
+    dealer_ids = re.findall(r"id:\s*(\d+)", cust.group(1))
+    return dealer_ids[0] if dealer_ids else None
+
+
 def page_ok(body: str, *markers: str) -> bool:
     return all(m in body for m in markers)
 
@@ -75,7 +117,7 @@ def page_ok(body: str, *markers: str) -> bool:
 def generate_license(opener, base_path: str, system_key: str):
     code, _, html = fetch(opener, base_path + "/new")
     token = csrf(html)
-    customers = select_options(html, "customerId")
+    customers = license_customer_ids(html)
     products = select_options(html, "productId")
     if not token or not customers or not products:
         return False, "form verisi yok"
@@ -87,11 +129,17 @@ def generate_license(opener, base_path: str, system_key: str):
         "systemKey": system_key,
         "validUntil": valid_until,
     }
+    dealer_id = license_dealer_id_for_customer(html, customers[0])
+    if dealer_id:
+        fields["dealerId"] = dealer_id
     code2, url2, body2 = fetch(
         opener, base_path + "/new", method="POST", data=urllib.parse.urlencode(fields).encode()
     )
-    ok_gen = code2 == 200 and "/licenses/" in url2 and (
-        "Lisans üretildi" in body2 or "licenseKey" in body2
+    ok_gen = code2 == 200 and re.search(r"/licenses/\d+", url2) and (
+        "Lisans başarıyla oluşturuldu" in body2
+        or "Lisans üretildi" in body2
+        or "licenseKey" in body2
+        or 'id="licenseKey"' in body2
     )
     return ok_gen, url2 if ok_gen else f"HTTP {code2}"
 
@@ -117,7 +165,7 @@ def main():
         sys.exit(1)
 
     admin_pages = [
-        ("/", ["License Portal"]),
+        ("/", ["AVKAR Lisans Portalı"]),
         ("/admin/products", ["Ürünler"]),
         ("/admin/dealers", ["Bayiler"]),
         ("/admin/customers", ["Kurum"]),

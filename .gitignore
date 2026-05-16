@@ -31,6 +31,10 @@ internal-docs/
 .env.*
 !.env.example
 
+# Python test scripts
+__pycache__/
+*.pyc
+
 # Spring Boot / Maven
 target/
 .mvn/wrapper/maven-wrapper.jar

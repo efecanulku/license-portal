@@ -1,171 +1,226 @@
-# Uçtan Uca Demo Senaryoları (Gün 20 — Blok A.3)
+# Demo ve Uçtan Uca Test Senaryoları
 
-Sunucu: `http://localhost:8080` · Profil: `local` · Detay: [`README.md`](../README.md)
+AVKAR Lisans Portalı için sunum, QA ve teslim öncesi doğrulama rehberi.
 
-## Ön koşullar
-
-- [ ] PostgreSQL çalışıyor, `license_portal` DB var
-- [ ] `.env` dolu (`LICENSE_PORTAL_MASTER_KEY` dahil)
-- [ ] `.\scripts\run-local.ps1` ile uygulama ayakta
-- [ ] Seed kullanıcılar: `admin` / `dealer`, şifre `password`
-
-**Otomatik duman testi (isteğe bağlı):**
-
-```powershell
-python scripts/test_e2e_smoke.py
-```
+| | |
+|---|---|
+| **Uygulama** | http://localhost:8080 |
+| **Profil** | `local` (seed + `.env`) |
+| **Kurulum** | [`README.md`](../README.md) |
 
 ---
 
-## Senaryo A — Admin tam akış
+## Ön koşullar
 
-Amaç: Ürün → bayi yetkisi → kurum → lisans → rapor zincirini doğrulamak.
+Aşağıdakiler tamamlanmadan senaryolara geçmeyin.
 
-### A1. Giriş ve ana sayfa
+- [ ] PostgreSQL çalışıyor; `license_portal` veritabanı oluşturuldu
+- [ ] `copy env.example .env` yapıldı; `LICENSE_PORTAL_MASTER_KEY` ve DB bilgileri dolduruldu
+- [ ] `.\scripts\run-local.ps1` ile uygulama ayakta
+- [ ] Tarayıcıda http://localhost:8080/login açılıyor
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| A1.1 | `/login` → `admin` / `password` | Ana sayfaya yönlendirme |
-| A1.2 | Ana sayfa kartları | Ürünler, Bayiler, Kurumlar, Lisanslar, Raporlar linkleri görünür |
-| A1.3 | Sidebar | Rol: ADMIN, yönetim menüsü açık |
+**Demo hesapları** (yalnızca `local` profil):
 
-### A2. Ürün (secret şifreli)
+| Kullanıcı | Şifre | Rol |
+|-----------|-------|-----|
+| `admin` | `password` | Yönetici |
+| `dealer` | `password` | Bayi (Demo Bayi) |
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
+**Hızlı otomasyon (isteğe bağlı, ~1 dk):**
+
+```powershell
+python scripts/test_e2e_smoke.py
+python scripts/test_security_checklist.py
+```
+
+Her ikisinde de son satırda **0 kaldı** beklenir.
+
+---
+
+## Senaryo A — Yönetici (Admin) tam akış
+
+**Amaç:** Ürün → bayi yetkisi → kurum → lisans üretimi → rapor zincirini uçtan uca doğrulamak.
+
+**Süre:** yaklaşık 15–20 dakika (ilk kez) · sunumda 8–10 dakika
+
+### A1. Giriş ve arayüz
+
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| A1.1 | `/login` → `admin` / `password` | AVKAR temalı giriş sonrası ana sayfa |
+| A1.2 | Ana sayfa | “AVKAR Lisans Portalı”, yönetim kartları (Ürünler, Bayiler, …) |
+| A1.3 | Sol menü | Rol: Yönetici; Ürünler, Bayiler, Kurumlar, Lisanslar, Raporlar |
+| A1.4 | Çıkış → tekrar giriş | Oturum düzgün kapanır / açılır |
+
+### A2. Ürün yönetimi (secret güvenliği)
+
+| # | İşlem | Beklenen |
+|---|--------|----------|
 | A2.1 | **Ürünler** → **Yeni ürün** | Form açılır |
 | A2.2 | Ad: `Demo Ürün`, Kod: `DEMO_E2E`, Secret: `test-secret-123` | — |
 | A2.3 | Kaydet | Listede ürün görünür |
-| A2.4 | Liste sayfası | **Secret sütunu yok**; şifreli alan HTML’de görünmez |
+| A2.4 | Liste sayfası | **Secret sütunu yok**; kaynakta `secret_key_enc` görünmez |
+| A2.5 | Düzenle → secret boş bırak | Mevcut secret korunur |
+| A2.6 | Arama kutusuna `DEMO` yaz | Filtrelenmiş liste |
 
-### A3. Bayi ve yetki
+### A3. Bayi ve ürün yetkisi
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| A3.1 | **Bayiler** → Demo Bayi detay / düzenle | Demo Bayi kaydı var (seed) |
-| A3.2 | Bayi → **Ürün yetkileri** | Yetki listesi |
-| A3.3 | `DEMO_E2E` (veya mevcut ürün) için yetki ver | Yetki satırı eklenir |
-| A3.4 | Bayi kullanıcıları | `dealer` kullanıcısı aktif |
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| A3.1 | **Bayiler** → **Demo Bayi** (seed) | Kayıt listede |
+| A3.2 | **Ürün yetkileri** | Yetki listesi; `DEMO_E2E` için **Yetki ver** |
+| A3.3 | Başarı bildirimi | **Tek** yeşil uyarı (çift bildirim olmamalı) |
+| A3.4 | **Kullanıcılar** | `dealer` kullanıcısı listede; arama kutusu çalışır |
 
 ### A4. Kurum
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
+| # | İşlem | Beklenen |
+|---|--------|----------|
 | A4.1 | **Kurumlar** → **Yeni kurum** | Form |
-| A4.2 | Ad: `E2E Test Hastanesi`, bayi: Demo Bayi | Kayıt oluşur |
-| A4.3 | Listede kurum | Filtre / listede görünür |
+| A4.2 | Ad: `E2E Test Hastanesi`, bağlı bayi: **Demo Bayi** | Kayıt OK |
+| A4.3 | Liste / arama | Kurum görünür, arama çalışır |
+| A4.4 | (İsteğe bağlı) Düzenle → ikinci bayi bağla | Çoklu bayi testi için hazır |
 
-> Admin lisans üretiminde kurumun **bağlı bayisi** olmalıdır (`created_by_dealer`).
+> Admin lisans üretiminde kurumun **en az bir bağlı bayisi** olmalıdır.
 
-### A5. Lisans üretimi ve sonuç
+### A5. Lisans üretimi (kritik)
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| A5.1 | **Lisans üret** | Form: kurum, ürün, sistem anahtarı, tarih |
-| A5.2 | Kurum + ürün seç, sistem anahtarı: `E2E-SYS-001`, geçerlilik: gelecek tarih | — |
-| A5.3 | **Lisans üret** | Sonuç / detay sayfası |
-| A5.4 | Sonuç ekranı | “Lisans üretildi”, anahtar büyük font, **Kopyala** çalışır |
-| A5.5 | **Lisanslar** listesi | Yeni kayıt, filtreler çalışır |
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| A5.1 | **Lisans üret** | Kurum arama, ürün, sistem anahtarı, tarih, demo kutusu |
+| A5.2 | Kurum ara → `E2E Test Hastanesi` seç | Yeşil “Seçili: …” metni |
+| A5.3 | Kuruma birden fazla bayi bağlıysa | “Lisansı kaydedecek bayi” açılır; birini seçin |
+| A5.4 | Tek bayili kurumda | Bayi alanı gizli veya otomatik |
+| A5.5 | Ürün: `DEMO_E2E`, sistem: `E2E-SYS-001`, gelecek tarih → **Lisans üret** | Başarı |
+| A5.6 | Sonuç ekranı | “Lisans başarıyla oluşturuldu”, büyük anahtar, **Kopyala** |
+| A5.7 | **Lisanslar** | Yeni kayıt; filtreler ve arama (`q`) çalışır |
+| A5.8 | Detay | Kurum, ürün, bayi, tarih, **Üreten: admin** doğru |
 
-### A6. Raporlar (admin)
+**Not:** Üretilen anahtar şu an **placeholder algoritma** ile üretilir. Gerçek yazılımla uyum şirket algoritması entegre edildikten sonra test edilir.
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| A6.1 | Ürün bazlı lisans sayısı | Ürün kodu + adet |
-| A6.2 | Bayi bazlı lisans sayısı | Demo Bayi satırı, sayı ≥ 1 |
-| A6.3 | Müşteri bazlı lisans özeti | Kurum başına adet |
-| A6.4 | Demo / üretim dağılımı | Demo + üretim kartları, ilerleme çubuğu |
-| A6.5 | Süresi dolan / yaklaşan | Filtre, tablo, sayfalama |
+### A6. Raporlar
 
-### A7. Çıkış
+Menüden **Raporlar** veya doğrudan URL.
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
+| # | Sayfa | URL | Kontrol |
+|---|--------|-----|---------|
+| A6.1 | Rapor ana | `/reports` | Kartlar; admin için “ürün sayısı” linki |
+| A6.2 | Ürün bazlı | `/reports/product-count` | Tablo + bar grafik (taşmamalı) |
+| A6.3 | Bayi bazlı | `/reports/dealer-count` | Demo Bayi satırı, sayı ≥ 1 |
+| A6.4 | Müşteri özeti | `/reports/customer-summary` | Kurum + adet; grafik okunaklı |
+| A6.5 | Demo dağılım | `/reports/demo-distribution` | Özet kartlar + donut sığmalı |
+| A6.6 | Süresi dolan | `/reports/expiring` | Filtre (ör. 400 gün), tablo, sayfalama; **500 hatası olmamalı** |
+
+Ana sayfada “yakında bitecek lisans” uyarısı varsa linke tıklayın → expiring raporu açılmalı.
+
+### A7. Çıkış ve koruma
+
+| # | İşlem | Beklenen |
+|---|--------|----------|
 | A7.1 | **Çıkış** | Login sayfası |
-| A7.2 | `/admin/products` (girişsiz) | Login’e yönlendirme |
+| A7.2 | Giriş yapmadan `/admin/products` | Login'e yönlendirme |
 
 ---
 
 ## Senaryo B — Bayi tam akış
 
-Amaç: Yetkili ürün, kendi kurumu, kendi lisansı ve kendi raporu.
+**Amaç:** Yetkili ürün, kendi kurumu, kendi lisansı ve kendi raporları; yetkisiz URL'lerin engellenmesi.
 
-### B1. Giriş
+Önce **çıkış** yapın; `dealer` / `password` ile giriş yapın.
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| B1.1 | `dealer` / `password` | Ana sayfa, BAYI menüsü |
-| B1.2 | Ana sayfa | Kurumlarım, Lisanslarım, Lisans üret, Raporlar |
+**Süre:** yaklaşık 10–15 dakika · sunumda 5–7 dakika
+
+### B1. Giriş ve menü
+
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| B1.1 | `dealer` / `password` | Bayi paneli / ana sayfa |
+| B1.2 | Sol menü | **Ürünler / Bayiler / admin Kurumlar yok** |
+| B1.3 | Görünen modüller | Kurumlarım, Lisanslarım, Lisans üret, Raporlar |
 
 ### B2. Kurum
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| B2.1 | **Kurumlarım** → **Yeni** | Form |
-| B2.2 | `E2E Bayi Kurumu` kaydet | Listede “Sizin oluşturduğunuz kurumlar” |
-| B2.3 | `/admin/customers` (URL) | **Yetkisiz** (manuel URL denemesi) |
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| B2.1 | **Kurumlarım** | Alt başlık: “Bayinize bağlı kurumlar” |
+| B2.2 | **Yeni kurum** → `E2E Bayi Kurumu` | Kayıt listede |
+| B2.3 | URL: `/admin/customers` | Yetkisiz (403 veya login) |
 
-### B3. Lisans üretimi
+### B3. Lisans
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| B3.1 | **Lisans üret** | Ürün dropdown: yalnızca yetkili ürünler |
-| B3.2 | Kendi kurum + yetkili ürün, `E2E-DEALER-SYS` | Üretim başarılı |
-| B3.3 | Sonuç | Kopyala + özet bilgiler |
-| B3.4 | **Lisanslarım** | Yalnızca bu kullanıcının ürettikleri |
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| B3.1 | **Lisans üret** | Ürün listesinde yalnızca yetkili ürünler (`DEMO_E2E` vb.) |
+| B3.2 | Kendi kurum + ürün, `E2E-DEALER-SYS`, üret | Başarı + kopyala |
+| B3.3 | **Lisanslarım** | Yalnızca bu kullanıcının (`dealer`) ürettikleri |
+| B3.4 | Detayda **Üreten: dealer** | Kendi kaydı |
 
-### B4. Raporlar (bayi)
+### B4. Raporlar (bayi kapsamı)
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| B4.1 | Lisans özetim | Tek satır, sayı ≥ 1 |
-| B4.2 | Müşteri bazlı özet | Kendi kurumlarınız |
-| B4.3 | Demo / üretim dağılımı | Sadece sizin ürettikleriniz |
-| B4.4 | Süresi dolan / yaklaşan | “Yalnızca sizin ürettikleriniz” |
-| B4.5 | `/reports/product-count` | Yetkisiz |
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| B4.1 | `/reports` | Açılır; bayi verisi |
+| B4.2 | Müşteri özeti, demo dağılım, süresi dolan | Sadece bayi kapsamındaki sayılar |
+| B4.3 | `/reports/product-count` | **Yetkisiz** (admin raporu) |
 
-### B5. Negatif — başkasının verisi
+### B5. Negatif testler (güvenlik)
 
-| Adım | İşlem | Beklenen |
-|------|--------|----------|
-| B5.1 | Admin’in ürettiği bir lisans ID’si ile `/dealer/licenses/{id}` | Erişim yok / yetkisiz |
-| B5.2 | Başka bayinin kurumunu düzenleme (varsa id=1) | Kurum bulunamadı / yetkisiz |
+| # | İşlem | Beklenen |
+|---|--------|----------|
+| B5.1 | Admin’in ürettiği lisans: detayda **Üreten: admin** olan bir `id` ile `/dealer/licenses/{id}` | Erişim yok |
+| B5.2 | Bayi kendi ürettiği lisans `id` ile aynı URL | **Açılır** (bu normaldir) |
+| B5.3 | `/admin/products` | Yetkisiz |
+
+Otomasyon: `python scripts/test_manual_8_3_8_4.py`
 
 ---
 
-## Senaryo C — Hızlı regresyon (5 dk)
-
-Teslim öncesi minimum kontrol:
+## Senaryo C — Teslim öncesi hızlı regresyon (~10 dk)
 
 - [ ] `python scripts/test_e2e_smoke.py` → 0 fail
 - [ ] `python scripts/test_security_checklist.py` → 0 fail
-- [ ] Admin: bir lisans üret + kopyala
-- [ ] Bayi: lisans listesi admin listesinden farklı (daha az kayıt)
-- [ ] Ürün listesinde secret görünmüyor
+- [ ] Admin: bir lisans üret + panoya kopyala
+- [ ] Bayi lisans listesi, admin listesinden farklı (daha az kayıt)
+- [ ] Ürün listesi kaynağında secret yok
+- [ ] `git status` → `.env` ve `internal-docs/` yok
 
 ---
 
-## Demo sırası önerisi (sunum)
+## Önerilen sunum sırası (~15 dk)
 
-1. **Admin (8 dk):** A2 ürün → A3 yetki → A4 kurum → A5 lisans + kopyala → A6 rapor özeti  
-2. **Bayi (5 dk):** B2 kurum → B3 lisans → B4 rapor  
-3. **Güvenlik (2 dk):** Bayi ile `/admin/products` → Yetkisiz; ürün listesinde secret yok  
+1. **Admin (8 dk):** Ürün + secret güvenliği → bayi yetkisi → kurum → lisans üret + kopyala → bir rapor özeti  
+2. **Bayi (5 dk):** Kurum → lisans → rapor  
+3. **Güvenlik (2 dk):** Bayi ile `/admin/products` → yetkisiz; ürün listesinde secret yok  
 
 ---
 
 ## Sorun giderme
 
-| Belirti | Olası neden |
-|---------|-------------|
-| Login olmuyor | `local` profil, seed çalıştı mı; PostgreSQL + `.env` |
-| Lisans üretilemiyor (admin) | Kurumun bayisi yok; ürün pasif |
-| Bayi ürün göremiyor | Admin’den ürün yetkisi verilmemiş |
-| Master key hatası | `LICENSE_PORTAL_MASTER_KEY` `.env` içinde |
+| Belirti | Olası neden | Çözüm |
+|---------|-------------|--------|
+| Login olmuyor | Profil / DB / seed | `SPRING_PROFILES_ACTIVE=local`, PostgreSQL, `.env` |
+| Port 8080 dolu | Eski Java süreci | Görev yöneticisinden `java.exe` kapatın veya mevcut oturumu kullanın |
+| Master key hatası | Eksik env | `.env` → `LICENSE_PORTAL_MASTER_KEY` |
+| Admin: “bayi seçin” | Çoklu bayi | Kurum düzenlemeden bayi bağlayın veya formda bayi seçin |
+| Bayi ürün göremiyor | Yetki yok | Admin → Bayi → Ürün yetkileri |
+| `/reports/expiring` 500 | Geçici / filtre | Sayfayı yenileyin; gün değerini düşürün; log kontrol |
+| Grafik taşması | Önbellek | Ctrl+F5 |
+
+---
+
+## Şirkete iletilecek bilinçli sınırlar
+
+| Konu | Durum |
+|------|--------|
+| **LicenseGenerator** | Placeholder; gerçek algoritma şirketten bekleniyor |
+| **Demo hesaplar** | Yalnızca `local` profil seed |
+| **Gizli dosyalar** | `.env`, `internal-docs/` commit edilmez |
 
 ---
 
 ## İlgili dokümanlar
 
-- [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) — güvenlik maddeleri  
+- [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) — güvenlik maddeleri ve otomasyon  
 - [`ENV.md`](ENV.md) — ortam değişkenleri  
-- [`PLANNING.md`](PLANNING.md) — 20 gün planı  
+- [`README.md`](../README.md) — kurulum ve proje özeti  
+- [`PLANNING.md`](PLANNING.md) — geliştirme planı  

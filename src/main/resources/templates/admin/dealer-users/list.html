@@ -19,9 +19,6 @@
             </div>
         </div>
 
-        <div th:if="${flashSuccess}" class="alert alert-success" th:text="${flashSuccess}"></div>
-        <div th:if="${flashError}" class="alert alert-danger" th:text="${flashError}"></div>
-
         <form class="card card-body mb-3" method="get" th:action="${listFormAction}">
             <div class="row g-2 align-items-end">
                 <div class="col-md-6">

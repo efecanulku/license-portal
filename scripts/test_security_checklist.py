@@ -16,14 +16,11 @@ ADMIN_PATHS = [
     "/admin/products",
     "/admin/dealers",
     "/admin/licenses",
-    "/reports",
-    "/reports/dealer-count",
 ]
 
 DEALER_PATHS = [
     "/dealer/customers",
     "/dealer/licenses",
-    "/reports",
 ]
 
 SECRET_MARKERS = [
@@ -114,7 +111,10 @@ def main():
 
     print("\n[4] Bayi izolasyonu")
     _, _, dc_body = fetch(dealer, "/dealer/customers")
-    ok("dealer kurum listesi kendi", "Sizin oluşturduğunuz" in dc_body)
+    ok(
+        "dealer kurum listesi kendi",
+        "Bayinize bağlı kurumlar" in dc_body or "Kurumlarım" in dc_body,
+    )
 
     code, _, body = fetch(dealer, "/dealer/customers/1/edit")
     blocked = denied(code, body) or "Kurum bulunamadı" in body
@@ -122,15 +122,20 @@ def main():
 
     _, _, admin_lic = fetch(admin, "/admin/licenses")
     admin_ids = re.findall(r"/admin/licenses/(\d+)", admin_lic)
-    if admin_ids:
-        lid = admin_ids[0]
+    blocked = False
+    for lid in admin_ids[:30]:
         code, _, body = fetch(dealer, f"/dealer/licenses/{lid}")
+        if denied(code, body) or "erişim yetkiniz yok" in body.lower():
+            ok("dealer admin lisans detayı engelli", True, f"id={lid} HTTP {code}")
+            blocked = True
+            break
+    if admin_ids and not blocked:
         ok(
             "dealer admin lisans detayı engelli",
-            denied(code, body) or "erişim yetkiniz yok" in body.lower(),
-            f"id={lid} HTTP {code}",
+            False,
+            "bayi listedeki örnek lisansların tamamına erişebildi",
         )
-    else:
+    elif not admin_ids:
         print("  SKIP dealer lisans detayı — admin listede kayıt yok")
 
     print("\n[5] Secret görünmezliği")

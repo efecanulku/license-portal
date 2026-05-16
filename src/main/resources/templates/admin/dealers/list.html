@@ -16,9 +16,6 @@
             <a class="btn btn-primary" th:href="@{/admin/dealers/new}">Yeni bayi</a>
         </div>
 
-        <div th:if="${flashSuccess}" class="alert alert-success" th:text="${flashSuccess}"></div>
-        <div th:if="${flashError}" class="alert alert-danger" th:text="${flashError}"></div>
-
         <div th:replace="~{common/_list-search :: listSearch(formAction='/admin/dealers', pageParams=${pageParams}, dealerId=null)}"></div>
 
         <p class="text-secondary small mb-2" th:if="${itemPage != null}"

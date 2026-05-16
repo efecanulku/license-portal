@@ -28,8 +28,9 @@ Tüm maddeler **OK** ise bu blok tamamlanmış sayılır.
 
 | # | Kontrol | Beklenen | Otomatik |
 |---|---------|----------|----------|
-| 2.1 | BAYI → `/admin/**` (ürün, bayi, lisans, rapor) | 403 / “Yetkisiz” | Evet |
-| 2.2 | ADMIN → `/dealer/**` (kurum, lisans, rapor) | 403 / “Yetkisiz” | Evet |
+| 2.1 | BAYI → `/admin/**` (ürün, bayi, lisans) | 403 / “Yetkisiz” | Evet |
+| 2.2 | ADMIN → `/dealer/**` (kurum, lisans) | 403 / “Yetkisiz” | Evet |
+| 2.2b | Her iki rol → `/reports/**` (ortak modül) | 200 (BAYI: `product-count` hariç) | Evet |
 | 2.3 | BAYI → `/dealer/**` kendi modülleri | 200, sayfa açılır | Evet |
 | 2.4 | ADMIN → `/admin/**` | 200, sayfa açılır | Evet |
 
@@ -39,11 +40,11 @@ Tüm maddeler **OK** ise bu blok tamamlanmış sayılır.
 
 | # | Kontrol | Beklenen | Otomatik |
 |---|---------|----------|----------|
-| 3.1 | BAYI yalnızca kendi kurumlarını listeler | “Sizin oluşturduğunuz” metni | Evet |
+| 3.1 | BAYI yalnızca kendi kurumlarını listeler | “Bayinize bağlı kurumlar” / Kurumlarım | Evet |
 | 3.2 | BAYI başka bayinin kurumunu düzenleyemez | 404 / “Kurum bulunamadı” veya yetkisiz | Evet |
 | 3.3 | BAYI lisans listesi yalnızca `created_by` = kendisi | Admin’de daha fazla kayıt | Evet* |
 | 3.4 | BAYI başka kullanıcının lisans detayına erişemez | Yetkisiz / 403 | Evet |
-| 3.5 | BAYI admin raporlarına erişemez | 403 | Evet |
+| 3.5 | BAYI yalnızca `/reports/product-count` erişemez | 403 | Evet |
 
 \*Gün 17 test scripti ile doğrulanır; güvenlik scripti örnek kontrol içerir.
 
