@@ -213,7 +213,8 @@ Otomasyon: `python scripts/test_manual_8_3_8_4.py`
 | Konu | Durum |
 |------|--------|
 | **LicenseGenerator** | Placeholder; gerçek algoritma şirketten bekleniyor |
-| **Demo hesaplar** | Yalnızca `local` profil seed |
+| **Demo hesaplar** | `admin` / `dealer` yalnızca `local` profil seed (`password` ile) |
+| **Kullanıcı yönetimi** | BAYI: Admin → Bayiler → Kullanıcılar (portalda var). ADMIN: ekrandan eklenmez; production'da DB/ortam ile ilk yönetici |
 | **Gizli dosyalar** | `.env`, `internal-docs/` commit edilmez |
 
 ---

@@ -58,19 +58,19 @@ body.portal-body {
     letter-spacing: -0.02em;
 }
 
-.portal-brand-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--avkar-teal) 0%, var(--avkar-blue) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: -0.05em;
+.portal-brand-logo {
+    height: 40px;
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
     flex-shrink: 0;
+    display: block;
+}
+
+.portal-brand-logo--login {
+    height: 72px;
+    max-width: 160px;
+    margin: 0 auto 0.75rem;
 }
 
 .portal-brand-sub {
@@ -381,12 +381,6 @@ body.portal-body {
     margin-bottom: 1.75rem;
 }
 
-.portal-login-brand .portal-brand-mark {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 0.75rem;
-    font-size: 0.85rem;
-}
 
 /* —— Mobile sidebar —— */
 .portal-sidebar-toggle {

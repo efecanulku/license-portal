@@ -71,10 +71,21 @@ Tarayıcı: **http://localhost:8080**
 
 | Kullanıcı | Şifre | Rol |
 |-----------|-------|-----|
-| `admin` | `password` | Yönetici — tüm modüller |
-| `dealer` | `password` | Bayi — Demo Bayi |
+| `admin` | `password` | Yönetici (ADMIN) — `/admin/**` modülleri |
+| `dealer` | `password` | Bayi (BAYI) — Demo Bayi kapsamı |
 
-> Bu hesaplar yalnızca **`local`** profil seed'indedir. Production ortamında kullanmayın.
+> Bu hesaplar yalnızca **`local`** profil seed'indedir (`db/seed-local.sql`). Production'da `password` ve demo seed kullanmayın.
+
+### Kullanıcılar — ne portalda, ne değil?
+
+“Admin paneli” ayrı bir uygulama değildir; **`admin` ile giriş yapınca** açılan yönetim ekranlarının tamamıdır (Ürünler, Bayiler, Kurumlar, …).
+
+| Rol | Portalda yönetim | Production'da nasıl oluşur? |
+|-----|------------------|-----------------------------|
+| **BAYI** (bayi personeli) | **Evet** — Admin → **Bayiler** → [bayi] → **Kullanıcılar** (ekle / düzenle / pasifleştir) | Canlıda da aynı ekranlar; ilk ADMIN girişi yapıldıktan sonra bayi kullanıcıları buradan tanımlanır |
+| **ADMIN** (sistem yöneticisi) | **Hayır** — “Yeni yönetici ekle” ekranı yok | İlk ADMIN hesabı veritabanı / migration / DevOps ile oluşturulur; ek ADMIN ihtiyacı şirket sürecine göre DB veya ileride geliştirilecek özellik |
+
+Özet: Bayi çalışanlarını **yönetici portalından** tanımlarsınız; **`admin` hesabının kendisi** test için seed'de gelir, production'da şirket güvenli şekilde bir kez oluşturur.
 
 ---
 
@@ -131,8 +142,9 @@ env.example           # örnek ortam dosyası (commit edilir)
 ## Teslim notları (şirket)
 
 1. **LicenseGenerator** — Lisans anahtarı üretimi şu an **placeholder** (HMAC tabanlı demo). Gerçek algoritma şirketten geldiğinde yalnızca `LicenseGenerator.java` güncellenecek; portal akışı hazır.
-2. **Demo kullanıcılar** — `admin` / `dealer` ve seed verileri yalnızca `local` profilde.
-3. **Gizli dosyalar** — `.env` ve `internal-docs/` asla commit edilmez (`.gitignore`).
+2. **Demo kullanıcılar** — `admin` / `dealer` ve seed verileri yalnızca `local` profilde; production'da kullanılmaz.
+3. **Kullanıcı yönetimi** — BAYI kullanıcıları: Admin → Bayiler → Kullanıcılar. ADMIN kullanıcıları: UI yok; production'da DB/ortam ile ilk yönetici tanımlanır.
+4. **Gizli dosyalar** — `.env` ve `internal-docs/` asla commit edilmez (`.gitignore`).
 
 ---
 
