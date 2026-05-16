@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.NoSuchElementException;
@@ -87,6 +88,24 @@ public class AdminProductController {
             redirectAttributes.addFlashAttribute("flashError", "Ürün bulunamadı.");
             return "redirect:/admin/products";
         }
+    }
+
+    @PostMapping("/{id}/reveal-secret")
+    public String revealSecret(
+            @PathVariable Long id,
+            @RequestParam("revealPassword") String revealPassword,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            String secret = productService.revealSecret(id, revealPassword);
+            redirectAttributes.addFlashAttribute("revealedSecret", secret);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("flashError", e.getMessage());
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("flashError", "Ürün bulunamadı.");
+            return "redirect:/admin/products";
+        }
+        return "redirect:/admin/products/" + id + "/edit";
     }
 
     @PostMapping("/{id}")

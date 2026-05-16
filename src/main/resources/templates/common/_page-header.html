@@ -1,0 +1,8 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="pageHeader(title, subtitle)">
+    <div class="portal-page-header">
+        <div>
+            <h1 class="h4 mb-0" th:text="${title}">Başlık</h1>
+            <p class="subtitle" th:if="${subtitle != null and !#strings.isEmpty(subtitle)}" th:text="${subtitle}"></p>
+        </div>
+    </div>
+</div>

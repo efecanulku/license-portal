@@ -101,6 +101,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findByIdWithDealer(@Param("id") Long id);
 
     @Query("""
+            SELECT DISTINCT c FROM Customer c
+            LEFT JOIN FETCH c.createdByDealer
+            LEFT JOIN FETCH c.linkedDealers
+            ORDER BY c.name ASC
+            """)
+    List<Customer> findAllForAdminLicenseForm();
+
+    @Query("""
             SELECT c FROM Customer c
             JOIN c.linkedDealers ld
             WHERE c.id = :id AND ld.id = :dealerId

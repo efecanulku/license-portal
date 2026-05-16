@@ -60,6 +60,13 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
                       AND (:customerId IS NULL OR c.id = :customerId)
                       AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
                       AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                      AND (:q IS NULL OR :q = ''
+                           OR LOWER(l.licenseKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(l.systemKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(l.licenseOwnerDescription, '')) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.code) LIKE LOWER(CONCAT('%', :q, '%')))
                     ORDER BY l.createdAt DESC, l.id DESC
                     """,
             countQuery = """
@@ -72,6 +79,13 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
                       AND (:customerId IS NULL OR c.id = :customerId)
                       AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
                       AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                      AND (:q IS NULL OR :q = ''
+                           OR LOWER(l.licenseKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(l.systemKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(l.licenseOwnerDescription, '')) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.code) LIKE LOWER(CONCAT('%', :q, '%')))
                     """
     )
     Page<License> searchWithFiltersPage(
@@ -80,6 +94,7 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             @Param("customerId") Long customerId,
             @Param("validUntilFrom") LocalDate validUntilFrom,
             @Param("validUntilTo") LocalDate validUntilTo,
+            @Param("q") String q,
             Pageable pageable
     );
 
@@ -122,18 +137,34 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
                       AND (:customerId IS NULL OR c.id = :customerId)
                       AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
                       AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                      AND (:q IS NULL OR :q = ''
+                           OR LOWER(l.licenseKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(l.systemKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(l.licenseOwnerDescription, '')) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.code) LIKE LOWER(CONCAT('%', :q, '%')))
                     ORDER BY l.createdAt DESC, l.id DESC
                     """,
             countQuery = """
                     SELECT COUNT(l) FROM License l
                     JOIN l.dealer d
                     JOIN l.createdBy u
+                    JOIN l.product p
+                    JOIN l.customer c
                     WHERE u.id = :userId
                       AND d.id = :dealerId
                       AND (:productId IS NULL OR l.product.id = :productId)
                       AND (:customerId IS NULL OR l.customer.id = :customerId)
                       AND (:validUntilFrom IS NULL OR l.validUntil >= :validUntilFrom)
                       AND (:validUntilTo IS NULL OR l.validUntil <= :validUntilTo)
+                      AND (:q IS NULL OR :q = ''
+                           OR LOWER(l.licenseKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(l.systemKey) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(l.licenseOwnerDescription, '')) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(p.code) LIKE LOWER(CONCAT('%', :q, '%')))
                     """
     )
     Page<License> searchForBayiUserPage(
@@ -143,6 +174,7 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             @Param("customerId") Long customerId,
             @Param("validUntilFrom") LocalDate validUntilFrom,
             @Param("validUntilTo") LocalDate validUntilTo,
+            @Param("q") String q,
             Pageable pageable
     );
 
@@ -271,4 +303,32 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
               AND (l.isDemo = false OR l.isDemo IS NULL)
             """)
     long countProductionLicensesForBayiDealer(@Param("dealerId") Long dealerId);
+
+    @Query("""
+            SELECT COUNT(l) FROM License l
+            WHERE (:userId IS NULL OR l.createdBy.id = :userId)
+              AND (:dealerId IS NULL OR l.dealer.id = :dealerId)
+              AND l.validUntil < :today
+              AND l.validUntil <= :expiringUntil
+            """)
+    long countExpiredInExpiringWindow(
+            @Param("userId") Long userId,
+            @Param("dealerId") Long dealerId,
+            @Param("today") LocalDate today,
+            @Param("expiringUntil") LocalDate expiringUntil
+    );
+
+    @Query("""
+            SELECT COUNT(l) FROM License l
+            WHERE (:userId IS NULL OR l.createdBy.id = :userId)
+              AND (:dealerId IS NULL OR l.dealer.id = :dealerId)
+              AND l.validUntil >= :today
+              AND l.validUntil <= :expiringUntil
+            """)
+    long countExpiringInWindow(
+            @Param("userId") Long userId,
+            @Param("dealerId") Long dealerId,
+            @Param("today") LocalDate today,
+            @Param("expiringUntil") LocalDate expiringUntil
+    );
 }

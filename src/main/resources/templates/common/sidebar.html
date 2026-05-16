@@ -1,46 +1,50 @@
-<div xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
-     th:fragment="sidebar">
-    <div class="mb-3">
-        <div class="small text-secondary">Rol</div>
-        <div class="fw-semibold" sec:authorize="hasRole('ADMIN')">ADMIN</div>
-        <div class="fw-semibold" sec:authorize="hasRole('BAYI')">BAYI</div>
+<aside xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+       th:fragment="sidebar" class="col-12 col-lg-2 portal-sidebar" id="portalSidebar">
+    <div class="portal-sidebar-role">
+        <div class="label">Oturum</div>
+        <div class="value" sec:authorize="hasRole('ADMIN')">Yönetici</div>
+        <div class="value" sec:authorize="hasRole('BAYI')">Bayi</div>
     </div>
 
-    <div class="list-group">
-        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/}">Ana sayfa</a>
-        <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action" th:href="@{/dealer/dashboard}">Bayi paneli</a>
-
-        <div class="mt-3 small text-secondary" sec:authorize="hasRole('ADMIN')">Yönetim</div>
-        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/products}">
-            Ürünler
+    <nav class="portal-nav">
+        <a sec:authorize="hasRole('ADMIN')" class="portal-nav-link" th:href="@{/}" data-match="/" data-exact="true">
+            <i class="bi bi-house-door"></i> Ana sayfa
         </a>
-        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/dealers}">
-            Bayiler
-        </a>
-        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/customers}">
-            Kurumlar
-        </a>
-        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/licenses}">
-            Lisanslar
-        </a>
-        <a sec:authorize="hasRole('ADMIN')" class="list-group-item list-group-item-action" th:href="@{/admin/licenses/new}">
-            Lisans üret
-        </a>
-        <div class="mt-3 small text-secondary" sec:authorize="hasAnyRole('ADMIN','BAYI')">Raporlar</div>
-        <a sec:authorize="hasAnyRole('ADMIN','BAYI')" class="list-group-item list-group-item-action" th:href="@{/reports}">
-            Raporlar
+        <a sec:authorize="hasRole('BAYI')" class="portal-nav-link" th:href="@{/dealer/dashboard}" data-match="/dealer/dashboard" data-exact="true">
+            <i class="bi bi-speedometer2"></i> Bayi paneli
         </a>
 
-        <div class="mt-3 small text-secondary" sec:authorize="hasRole('BAYI')">Bayi</div>
-        <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action" th:href="@{/dealer/customers}">
-            Kurumlarım
+        <p class="portal-nav-section" sec:authorize="hasRole('ADMIN')">Yönetim</p>
+        <a sec:authorize="hasRole('ADMIN')" class="portal-nav-link" th:href="@{/admin/products}" data-match="/admin/products">
+            <i class="bi bi-box-seam"></i> Ürünler
         </a>
-        <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action" th:href="@{/dealer/licenses}">
-            Lisanslarım
+        <a sec:authorize="hasRole('ADMIN')" class="portal-nav-link" th:href="@{/admin/dealers}" data-match="/admin/dealers">
+            <i class="bi bi-building"></i> Bayiler
         </a>
-        <a sec:authorize="hasRole('BAYI')" class="list-group-item list-group-item-action" th:href="@{/dealer/licenses/new}">
-            Lisans üret
+        <a sec:authorize="hasRole('ADMIN')" class="portal-nav-link" th:href="@{/admin/customers}" data-match="/admin/customers">
+            <i class="bi bi-hospital"></i> Kurumlar
         </a>
-    </div>
-</div>
+        <a sec:authorize="hasRole('ADMIN')" class="portal-nav-link" th:href="@{/admin/licenses}" data-match="/admin/licenses">
+            <i class="bi bi-key"></i> Lisanslar
+        </a>
+        <a sec:authorize="hasRole('ADMIN')" class="portal-nav-link portal-nav-accent" th:href="@{/admin/licenses/new}" data-match="/admin/licenses/new" data-exact="true">
+            <i class="bi bi-plus-circle"></i> Lisans üret
+        </a>
 
+        <p class="portal-nav-section" sec:authorize="hasAnyRole('ADMIN','BAYI')">Raporlar</p>
+        <a sec:authorize="hasAnyRole('ADMIN','BAYI')" class="portal-nav-link" th:href="@{/reports}" data-match="/reports">
+            <i class="bi bi-bar-chart-line"></i> Raporlar
+        </a>
+
+        <p class="portal-nav-section" sec:authorize="hasRole('BAYI')">Bayi</p>
+        <a sec:authorize="hasRole('BAYI')" class="portal-nav-link" th:href="@{/dealer/customers}" data-match="/dealer/customers">
+            <i class="bi bi-hospital"></i> Kurumlarım
+        </a>
+        <a sec:authorize="hasRole('BAYI')" class="portal-nav-link" th:href="@{/dealer/licenses}" data-match="/dealer/licenses">
+            <i class="bi bi-key"></i> Lisanslarım
+        </a>
+        <a sec:authorize="hasRole('BAYI')" class="portal-nav-link portal-nav-accent" th:href="@{/dealer/licenses/new}" data-match="/dealer/licenses/new" data-exact="true">
+            <i class="bi bi-plus-circle"></i> Lisans üret
+        </a>
+    </nav>
+</aside>

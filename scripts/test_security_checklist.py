@@ -140,8 +140,8 @@ def main():
     ok("dealer ürün ekleme engelli", denied(code, body), f"HTTP {code}")
 
     print("\n[6] Rapor izolasyonu")
-    code, _, body = fetch(dealer, "/reports/expiring")
-    ok("dealer admin rapor engelli", denied(code, body), f"HTTP {code}")
+    code, _, body = fetch(dealer, "/reports/product-count")
+    ok("dealer ürün sayısı raporu engelli", denied(code, body), f"HTTP {code}")
     code2, _, body2 = fetch(dealer, "/reports")
     ok("dealer kendi raporları açılır", code2 == 200 and "Raporlar" in body2)
 

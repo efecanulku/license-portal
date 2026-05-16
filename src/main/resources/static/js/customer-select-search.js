@@ -5,6 +5,8 @@
     const results = document.getElementById('customerSearchResults');
     const selectedLabel = document.getElementById('customerSelected');
     const countHint = document.getElementById('customerSearchCount');
+    const dealerWrapper = document.getElementById('dealerPickerWrapper');
+    const dealerSelect = document.getElementById('dealerId');
 
     if (!picker || !hidden || !search || !results || !window.LICENSE_PORTAL_CUSTOMERS) {
         return;
@@ -40,11 +42,74 @@
         }).slice(0, 50);
     }
 
+    function updateDealerPicker(customer) {
+        if (!dealerSelect) {
+            return;
+        }
+        const initial = dealerSelect.dataset.initialValue || '';
+        if (initial) {
+            delete dealerSelect.dataset.initialValue;
+        }
+
+        if (!customer) {
+            if (dealerWrapper) {
+                dealerWrapper.classList.add('d-none');
+            }
+            dealerSelect.disabled = false;
+            dealerSelect.required = false;
+            dealerSelect.innerHTML = '<option value="">Bayi seçin</option>';
+            dealerSelect.value = '';
+            return;
+        }
+
+        const dealers = customer.dealers ? customer.dealers : [];
+        if (dealers.length === 0) {
+            if (dealerWrapper) {
+                dealerWrapper.classList.remove('d-none');
+            }
+            dealerSelect.disabled = true;
+            dealerSelect.required = false;
+            dealerSelect.innerHTML = '<option value="">Bağlı bayi yok</option>';
+            dealerSelect.value = '';
+            return;
+        }
+
+        dealerSelect.disabled = false;
+        if (dealers.length === 1) {
+            if (dealerWrapper) {
+                dealerWrapper.classList.add('d-none');
+            }
+            dealerSelect.required = false;
+            dealerSelect.innerHTML =
+                '<option value="' + dealers[0].id + '">' + dealers[0].name + '</option>';
+            dealerSelect.value = String(dealers[0].id);
+            return;
+        }
+
+        if (dealerWrapper) {
+            dealerWrapper.classList.remove('d-none');
+        }
+        dealerSelect.required = true;
+        let html = '<option value="">Bayi seçin</option>';
+        dealers.forEach(function (d) {
+            html += '<option value="' + d.id + '">' + d.name + '</option>';
+        });
+        dealerSelect.innerHTML = html;
+        if (initial && dealers.some(function (d) {
+            return String(d.id) === String(initial);
+        })) {
+            dealerSelect.value = String(initial);
+        } else {
+            dealerSelect.value = '';
+        }
+    }
+
     function setSelected(customer) {
         if (!customer) {
             hidden.value = '';
             selectedLabel.textContent = '';
             selectedLabel.classList.add('d-none');
+            updateDealerPicker(null);
             return;
         }
         hidden.value = customer.id;
@@ -53,6 +118,7 @@
         selectedLabel.classList.remove('d-none');
         results.classList.add('d-none');
         activeIndex = -1;
+        updateDealerPicker(customer);
     }
 
     function renderResults(items) {
@@ -100,6 +166,7 @@
     search.addEventListener('input', function () {
         hidden.value = '';
         selectedLabel.classList.add('d-none');
+        updateDealerPicker(null);
         const items = filterCustomers(search.value);
         activeIndex = items.length > 0 ? 0 : -1;
         renderResults(items);
@@ -157,6 +224,12 @@
                 search.classList.add('is-invalid');
                 search.focus();
                 renderResults(filterCustomers(''));
+                return;
+            }
+            if (dealerSelect && dealerSelect.required && !dealerSelect.value) {
+                event.preventDefault();
+                dealerSelect.classList.add('is-invalid');
+                dealerSelect.focus();
             }
         });
     }

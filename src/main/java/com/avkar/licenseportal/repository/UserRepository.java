@@ -2,6 +2,8 @@ package com.avkar.licenseportal.repository;
 
 import com.avkar.licenseportal.entity.Role;
 import com.avkar.licenseportal.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +18,31 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameWithDealer(@Param("username") String username);
 
     List<User> findByDealer_IdAndRoleOrderByUsernameAsc(Long dealerId, Role role);
+
+    Page<User> findByDealer_IdAndRole(Long dealerId, Role role, Pageable pageable);
+
+    @Query(
+            value = """
+                    SELECT u FROM User u
+                    WHERE u.dealer.id = :dealerId AND u.role = :role
+                      AND (LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(u.fullName, '')) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(u.email, '')) LIKE LOWER(CONCAT('%', :q, '%')))
+                    """,
+            countQuery = """
+                    SELECT COUNT(u) FROM User u
+                    WHERE u.dealer.id = :dealerId AND u.role = :role
+                      AND (LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(u.fullName, '')) LIKE LOWER(CONCAT('%', :q, '%'))
+                           OR LOWER(COALESCE(u.email, '')) LIKE LOWER(CONCAT('%', :q, '%')))
+                    """
+    )
+    Page<User> searchBayiUsersPage(
+            @Param("dealerId") Long dealerId,
+            @Param("role") Role role,
+            @Param("q") String q,
+            Pageable pageable
+    );
 
     boolean existsByUsername(String username);
 

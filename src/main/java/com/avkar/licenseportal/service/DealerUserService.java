@@ -2,17 +2,20 @@ package com.avkar.licenseportal.service;
 
 import com.avkar.licenseportal.dto.DealerUserCreateForm;
 import com.avkar.licenseportal.dto.DealerUserUpdateForm;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.entity.Dealer;
 import com.avkar.licenseportal.entity.Role;
 import com.avkar.licenseportal.entity.User;
 import com.avkar.licenseportal.repository.UserRepository;
 import com.avkar.licenseportal.security.DealerAccessGuard;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -35,10 +38,19 @@ public class DealerUserService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> listBayiUsers(Long dealerId) {
+    public Page<User> listPage(Long dealerId, SimplePageParams params) {
         dealerAccessGuard.requireAdmin();
         ensureDealerExists(dealerId);
-        return userRepository.findByDealer_IdAndRoleOrderByUsernameAsc(dealerId, Role.BAYI);
+        PageRequest pageable = PageRequest.of(
+                params.getPage(),
+                SimplePageParams.PAGE_SIZE,
+                Sort.by(Sort.Direction.ASC, "username")
+        );
+        String q = params.normalizedQuery();
+        if (q == null) {
+            return userRepository.findByDealer_IdAndRole(dealerId, Role.BAYI, pageable);
+        }
+        return userRepository.searchBayiUsersPage(dealerId, Role.BAYI, q, pageable);
     }
 
     @Transactional(readOnly = true)

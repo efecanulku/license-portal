@@ -100,6 +100,14 @@ public class ProductService {
         return productRepository.save(p);
     }
 
+    @Transactional(readOnly = true)
+    public String revealSecret(Long id, String adminPassword) {
+        dealerAccessGuard.requireAdmin();
+        verifyAdminPasswordForSecretChange(adminPassword);
+        Product p = getById(id);
+        return aesEncryptionService.decryptFromBase64(p.getSecretKeyEnc());
+    }
+
     @Transactional
     public void toggleActive(Long id) {
         dealerAccessGuard.requireAdmin();

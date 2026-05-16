@@ -7,34 +7,34 @@
 <body>
 <div th:replace="~{common/layout :: layout(pageTitle='Demo / Aktif dağılımı', content=~{::content})}">
     <div th:fragment="content">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="portal-page-header">
             <div>
                 <h1 class="h4 mb-0">Demo / Aktif dağılımı</h1>
-                <div class="text-secondary small" th:text="${subtitle}"></div>
+                <p class="subtitle" th:text="${subtitle}">Tüm lisanslar</p>
             </div>
             <a class="btn btn-outline-secondary btn-sm" th:href="${reportsIndexUrl}">← Raporlar</a>
         </div>
 
         <div class="row g-3 mb-4">
             <div class="col-md-4">
-                <div class="card border-warning h-100">
-                    <div class="card-body text-center">
+                <div class="card portal-stat-card border-warning h-100">
+                    <div class="card-body text-center py-3">
                         <div class="text-secondary small">Demo</div>
                         <div class="fs-2 fw-semibold" th:text="${distribution.demoCount}">0</div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card border-success h-100">
-                    <div class="card-body text-center">
+                <div class="card portal-stat-card border-success h-100">
+                    <div class="card-body text-center py-3">
                         <div class="text-secondary small">Aktif (demo değil)</div>
                         <div class="fs-2 fw-semibold" th:text="${distribution.productionCount}">0</div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
+                <div class="card portal-stat-card h-100">
+                    <div class="card-body text-center py-3">
                         <div class="text-secondary small">Toplam</div>
                         <div class="fs-2 fw-semibold" th:text="${distribution.total}">0</div>
                     </div>
@@ -42,26 +42,38 @@
             </div>
         </div>
 
-        <div class="card mb-4" th:if="${distribution.total > 0}">
-            <div class="card-body">
-                <div class="small text-secondary mb-2">Dağılım grafiği</div>
-                <canvas id="demoChart" height="120" aria-label="Demo ve aktif lisans dağılımı"></canvas>
+        <div class="row g-3" th:if="${distribution.total > 0}">
+            <div class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="small text-secondary mb-2">Dağılım grafiği</div>
+                        <div class="portal-chart-wrap portal-chart-wrap--donut">
+                            <canvas id="demoChart" aria-label="Demo ve aktif lisans dağılımı"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="small text-secondary mb-2">Demo oranı</div>
+                        <div class="progress mb-2" style="height: 1.25rem;">
+                            <div class="progress-bar bg-warning text-dark" role="progressbar"
+                                 th:style="'width: ' + ${distribution.demoPercent} + '%'"
+                                 th:text="|Demo %${distribution.demoPercent}|"></div>
+                        </div>
+                        <div class="small text-secondary"
+                             th:text="|Aktif: %${100 - distribution.demoPercent}|"></div>
+                        <ul class="list-unstyled small text-secondary mt-3 mb-0">
+                            <li><span class="badge rounded-pill bg-warning text-dark me-1">&nbsp;</span> Demo lisanslar</li>
+                            <li class="mt-1"><span class="badge rounded-pill me-1" style="background:#0d9488">&nbsp;</span> Aktif (üretim) lisanslar</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card" th:if="${distribution.total > 0}">
-            <div class="card-body">
-                <div class="small text-secondary mb-2">Demo oranı</div>
-                <div class="progress" style="height: 1.5rem;">
-                    <div class="progress-bar bg-warning text-dark" role="progressbar"
-                         th:style="'width: ' + ${distribution.demoPercent} + '%'"
-                         th:text="|Demo %${distribution.demoPercent}|"></div>
-                </div>
-                <div class="small text-secondary mt-2"
-                     th:text="|Aktif: %${100 - distribution.demoPercent}|"></div>
-            </div>
-        </div>
-        <p th:if="${distribution.total == 0}" class="text-secondary">Henüz lisans kaydı yok.</p>
+        <p th:if="${distribution.total == 0}" class="text-secondary mb-0">Henüz lisans kaydı yok.</p>
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
         <script th:if="${distribution.total > 0}" th:inline="javascript">
@@ -76,12 +88,20 @@
                         labels: ['Demo', 'Aktif'],
                         datasets: [{
                             data: [demo, production],
-                            backgroundColor: ['#ffc107', '#198754']
+                            backgroundColor: ['#f59e0b', '#0d9488'],
+                            borderWidth: 0
                         }]
                     },
                     options: {
-                        plugins: {legend: {position: 'bottom'}},
-                        maintainAspectRatio: true
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '58%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {boxWidth: 12, padding: 12}
+                            }
+                        }
                     }
                 });
             })();

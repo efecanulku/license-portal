@@ -2,6 +2,8 @@ package com.avkar.licenseportal.dto;
 
 public class ExpiringLicenseFilter {
     public static final int DEFAULT_WITHIN_DAYS = 30;
+    /** Süre raporu filtresi üst sınırı (5 yıl). */
+    public static final int MAX_WITHIN_DAYS = 1825;
     public static final int PAGE_SIZE = 20;
 
     private LicenseExpiryStatus status = LicenseExpiryStatus.ALL;
@@ -21,7 +23,13 @@ public class ExpiringLicenseFilter {
     }
 
     public void setWithinDays(int withinDays) {
-        this.withinDays = withinDays > 0 ? withinDays : DEFAULT_WITHIN_DAYS;
+        if (withinDays <= 0) {
+            this.withinDays = DEFAULT_WITHIN_DAYS;
+        } else if (withinDays > MAX_WITHIN_DAYS) {
+            this.withinDays = MAX_WITHIN_DAYS;
+        } else {
+            this.withinDays = withinDays;
+        }
     }
 
     public int getPage() {

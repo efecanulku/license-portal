@@ -31,6 +31,9 @@ public class LicenseGenerateForm {
 
     private boolean demo;
 
+    /** Admin: birden fazla bağlı bayi varsa zorunlu. */
+    private Long dealerId;
+
     public Long getCustomerId() {
         return customerId;
     }
@@ -85,5 +88,13 @@ public class LicenseGenerateForm {
 
     public void setDemo(boolean demo) {
         this.demo = demo;
+    }
+
+    public Long getDealerId() {
+        return dealerId;
+    }
+
+    public void setDealerId(Long dealerId) {
+        this.dealerId = dealerId;
     }
 }

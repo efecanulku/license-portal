@@ -13,8 +13,8 @@
                 <div class="col-md-3">
                     <label class="form-label" for="withinDays">Yaklaşan süre (gün)</label>
                     <input id="withinDays" type="number" class="form-control" name="withinDays"
-                           min="1" max="365" th:field="${filter.withinDays}"/>
-                    <div class="form-text">“Tümü” ve “Yaklaşan” için üst sınır.</div>
+                           min="1" max="1825" th:field="${filter.withinDays}"/>
+                    <div class="form-text">Varsayılan 30 gün. En fazla 1825 gün (5 yıl). Örn. 400 ile Haziran 2027 bitişleri de görünür.</div>
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-primary w-100" type="submit">Filtrele</button>

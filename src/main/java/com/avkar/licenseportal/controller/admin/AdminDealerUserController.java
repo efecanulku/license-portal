@@ -2,6 +2,7 @@ package com.avkar.licenseportal.controller.admin;
 
 import com.avkar.licenseportal.dto.DealerUserCreateForm;
 import com.avkar.licenseportal.dto.DealerUserUpdateForm;
+import com.avkar.licenseportal.dto.SimplePageParams;
 import com.avkar.licenseportal.service.DealerService;
 import com.avkar.licenseportal.service.DealerUserService;
 import jakarta.validation.Valid;
@@ -31,12 +32,21 @@ public class AdminDealerUserController {
     }
 
     @GetMapping
-    public String list(@PathVariable Long dealerId, Model model, RedirectAttributes redirectAttributes) {
+    public String list(
+            @PathVariable Long dealerId,
+            @ModelAttribute SimplePageParams pageParams,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
         try {
             var dealer = dealerService.getById(dealerId);
+            var itemPage = dealerUserService.listPage(dealerId, pageParams);
             model.addAttribute("dealer", dealer);
             model.addAttribute("dealerId", dealerId);
-            model.addAttribute("users", dealerUserService.listBayiUsers(dealerId));
+            model.addAttribute("itemPage", itemPage);
+            model.addAttribute("users", itemPage.getContent());
+            model.addAttribute("pageParams", pageParams);
+            model.addAttribute("listFormAction", "/admin/dealers/" + dealerId + "/users");
             return "admin/dealer-users/list";
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("flashError", "Bayi bulunamadı.");

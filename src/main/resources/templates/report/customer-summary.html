@@ -7,10 +7,10 @@
 <body>
 <div th:replace="~{common/layout :: layout(pageTitle='Müşteri bazlı lisans özeti', content=~{::content})}">
     <div th:fragment="content">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="portal-page-header">
             <div>
                 <h1 class="h4 mb-0">Müşteri bazlı lisans özeti</h1>
-                <div class="text-secondary small" th:text="${subtitle}"></div>
+                <p class="subtitle" th:text="${subtitle}"></p>
             </div>
             <a class="btn btn-outline-secondary btn-sm" th:href="${reportsIndexUrl}">← Raporlar</a>
         </div>

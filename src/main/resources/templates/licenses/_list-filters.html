@@ -1,5 +1,15 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="licenseFilters(formAction, showDealerFilter)">
     <form class="card card-body mb-3" method="get" th:action="${formAction}" th:object="${filter}">
+        <div class="row g-2 align-items-end mb-2">
+            <div class="col-md-8">
+                <label class="form-label" for="licenseSearchQ">Ara</label>
+                <input id="licenseSearchQ" type="search" class="form-control" th:field="*{q}"
+                       placeholder="Lisans anahtarı, kurum, ürün, sistem anahtarı..."/>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-outline-primary" type="submit">Ara / Filtrele</button>
+            </div>
+        </div>
         <div class="row g-2 align-items-end">
             <div class="col-md-3" th:if="${showDealerFilter}">
                 <label class="form-label" for="dealerId">Bayi</label>
@@ -30,9 +40,6 @@
             <div class="col-md-2">
                 <label class="form-label" for="validUntilTo">Geçerlilik (bitiş)</label>
                 <input id="validUntilTo" type="date" class="form-control" th:field="*{validUntilTo}"/>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-outline-primary w-100" type="submit">Filtrele</button>
             </div>
         </div>
     </form>

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.ui.Model;
 
 @Service
 public class ReportService {
@@ -127,6 +128,30 @@ public class ReportService {
                 LicenseExpiryStatus.ALL.name(),
                 PageRequest.of(0, 1)
         ).getTotalElements();
+    }
+
+    @Transactional(readOnly = true)
+    public void addExpiringChartForFilter(Model model, ExpiringLicenseFilter filter) {
+        Long userId = null;
+        Long dealerId = null;
+        if (currentUserContext.isBayi()) {
+            dealerId = dealerAccessGuard.requireCurrentDealerId();
+        }
+        addExpiringChart(model, userId, dealerId, filter);
+    }
+
+    private void addExpiringChart(Model model, Long userId, Long dealerId, ExpiringLicenseFilter filter) {
+        LocalDate today = LocalDate.now();
+        LocalDate expiringUntil = today.plusDays(filter.getWithinDays());
+        long expired = licenseRepository.countExpiredInExpiringWindow(userId, dealerId, today, expiringUntil);
+        long expiring = licenseRepository.countExpiringInWindow(userId, dealerId, today, expiringUntil);
+        if (expired == 0 && expiring == 0) {
+            model.addAttribute("showChart", false);
+            return;
+        }
+        model.addAttribute("showChart", true);
+        model.addAttribute("chartLabels", List.of("Süresi dolmuş", "Yakında dolacak"));
+        model.addAttribute("chartValues", List.of(expired, expiring));
     }
 
     private Page<License> searchExpiring(Long userId, Long dealerId, ExpiringLicenseFilter filter) {

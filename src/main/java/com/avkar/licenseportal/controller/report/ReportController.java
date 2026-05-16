@@ -68,11 +68,14 @@ public class ReportController {
     @GetMapping("/expiring")
     @PreAuthorize("hasAnyRole('ADMIN', 'BAYI')")
     public String expiring(@ModelAttribute ExpiringLicenseFilter filter, Model model) {
-        Page<?> page = currentUserContext.isAdmin()
+        boolean admin = currentUserContext.isAdmin();
+        Page<?> page = admin
                 ? reportService.expiringLicensesForAdmin(filter)
                 : reportService.expiringLicensesForCurrentBayi(filter);
-        boolean showDealerColumn = currentUserContext.isAdmin();
-        populateExpiringModel(model, filter, page, "/reports/expiring", showDealerColumn);
+        boolean showDealerColumn = admin;
+        String subtitle = admin ? "Tüm lisanslar" : "Bayinize ait tüm lisanslar";
+        populateExpiringModel(model, filter, page, "/reports/expiring", showDealerColumn, subtitle);
+        reportService.addExpiringChartForFilter(model, filter);
         model.addAttribute("reportsIndexUrl", "/reports");
         return "report/expiring";
     }
@@ -114,7 +117,8 @@ public class ReportController {
             ExpiringLicenseFilter filter,
             Page<?> page,
             String formAction,
-            boolean showDealerColumn
+            boolean showDealerColumn,
+            String subtitle
     ) {
         model.addAttribute("filter", filter);
         model.addAttribute("licensePage", page);
@@ -123,5 +127,6 @@ public class ReportController {
         model.addAttribute("formAction", formAction);
         model.addAttribute("showDealerColumn", showDealerColumn);
         model.addAttribute("adminDetailLinks", showDealerColumn);
+        model.addAttribute("subtitle", subtitle);
     }
 }

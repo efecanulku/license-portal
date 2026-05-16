@@ -19,6 +19,8 @@ public class LicenseListFilter {
 
     private int page = 0;
 
+    private String q;
+
     public Long getDealerId() {
         return dealerId;
     }
@@ -65,5 +67,21 @@ public class LicenseListFilter {
 
     public void setPage(int page) {
         this.page = Math.max(0, page);
+    }
+
+    public String getQ() {
+        return q;
+    }
+
+    public void setQ(String q) {
+        this.q = q;
+    }
+
+    public String normalizedQuery() {
+        if (q == null) {
+            return null;
+        }
+        String trimmed = q.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

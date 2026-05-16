@@ -42,6 +42,7 @@ public class LicenseService {
                 filter.getCustomerId(),
                 filter.getValidUntilFrom(),
                 filter.getValidUntilTo(),
+                filter.normalizedQuery(),
                 pageableForList(filter)
         );
     }
@@ -57,6 +58,7 @@ public class LicenseService {
                 filter.getCustomerId(),
                 filter.getValidUntilFrom(),
                 filter.getValidUntilTo(),
+                filter.normalizedQuery(),
                 pageableForList(filter)
         );
     }

@@ -10,11 +10,12 @@
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
                 <h1 class="h4 mb-0">Süresi dolan / yaklaşan lisanslar</h1>
-                <div class="text-secondary small"
-                     th:text="${showDealerColumn} ? 'Tüm lisanslar' : 'Yalnızca sizin ürettikleriniz'"></div>
+                <div class="text-secondary small" th:text="${subtitle}"></div>
             </div>
             <a class="btn btn-outline-secondary btn-sm" th:href="${reportsIndexUrl}">← Raporlar</a>
         </div>
+
+        <div th:replace="~{report/_bar-chart :: barChart('expiringChart', 'Süre durumu grafiği')}"></div>
 
         <div th:replace="~{report/_expiring-filters :: expiringFilters}"></div>
         <div th:replace="~{report/_expiring-table :: expiringTable}"></div>

@@ -21,13 +21,29 @@
         </div>
         <div id="customerSelected" class="small text-success mt-1 d-none"></div>
         <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></div>
-        <script th:inline="javascript">
+        <script th:inline="javascript" th:if="${licenseCustomerOptions != null}">
+            window.LICENSE_PORTAL_CUSTOMERS = [
+                /*[# th:each="c : ${licenseCustomerOptions}"]*/
+                {
+                    id: /*[[${c.id}]]*/ 0,
+                    name: /*[[${c.name}]]*/ '',
+                    tax: /*[[${c.taxNumber != null ? c.taxNumber : ''}]]*/ '',
+                    dealers: [
+                        /*[# th:each="d : ${c.dealers}"]*/
+                        { id: /*[[${d.id}]]*/ 0, name: /*[[${d.name}]]*/ '' },
+                        /*[/]*/
+                    ]
+                },
+                /*[/]*/
+            ];
+        </script>
+        <script th:inline="javascript" th:unless="${licenseCustomerOptions != null}">
             window.LICENSE_PORTAL_CUSTOMERS = [
                 /*[# th:each="c : ${customers}"]*/
                 {
                     id: /*[[${c.id}]]*/ 0,
                     name: /*[[${c.name}]]*/ '',
-                    tax: /*[[${c.taxNumber}]]*/ ''
+                    tax: /*[[${c.taxNumber != null ? c.taxNumber : ''}]]*/ ''
                 },
                 /*[/]*/
             ];
@@ -36,6 +52,15 @@
     <div class="mb-3" th:if="${#lists.isEmpty(customers)}">
         <label class="form-label">Kurum</label>
         <p class="text-secondary small mb-0">Önce kurum ekleyin.</p>
+    </div>
+
+    <div th:if="${adminLicenseGenerate}" id="dealerPickerWrapper" class="mb-3 d-none">
+        <label class="form-label" for="dealerId">Lisansı kaydedecek bayi <span class="text-danger">*</span></label>
+        <select id="dealerId" class="form-select" name="dealerId" th:field="*{dealerId}"
+                th:attr="data-initial-value=${form.dealerId}">
+            <option value="">Bayi seçin</option>
+        </select>
+        <div id="dealerPickerHint" class="form-text">Kuruma birden fazla bayi bağlıysa hangi bayi adına kaydedileceğini seçin.</div>
     </div>
 
     <div class="mb-3">

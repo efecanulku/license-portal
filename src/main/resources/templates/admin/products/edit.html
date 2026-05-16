@@ -7,6 +7,29 @@
             <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/products}">Geri</a>
         </div>
 
+        <div th:if="${revealedSecret}" class="alert alert-info" style="max-width: 720px;">
+            <div class="fw-semibold mb-1">Mevcut ürün secret (yalnızca siz görüyorsunuz)</div>
+            <code class="user-select-all d-block text-break" th:text="${revealedSecret}"></code>
+        </div>
+
+        <div class="bg-white border rounded-3 p-4 mb-3" style="max-width: 720px;">
+            <h2 class="h6 mb-3">Mevcut secret'ı görüntüle</h2>
+            <form method="post" th:action="@{|/admin/products/${productId}/reveal-secret|}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-8">
+                        <label class="form-label" for="revealPassword">Mevcut şifreniz</label>
+                        <input id="revealPassword" type="password" name="revealPassword" class="form-control"
+                               autocomplete="current-password" required/>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-secondary w-100" type="submit">Secret'ı göster</button>
+                    </div>
+                </div>
+                <p class="form-text mb-0 mt-2">Güvenlik için admin şifreniz istenir. Secret ekranda bir kez gösterilir.</p>
+            </form>
+        </div>
+
         <div class="bg-white border rounded-3 p-4" style="max-width: 720px;">
             <form method="post" th:action="@{|/admin/products/${productId}|}" th:object="${form}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

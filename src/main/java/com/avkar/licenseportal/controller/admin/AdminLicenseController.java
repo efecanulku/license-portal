@@ -109,6 +109,8 @@ public class AdminLicenseController {
         var options = licenseFormService.buildOptionsForAdmin();
         model.addAttribute("products", options.getProducts());
         model.addAttribute("customers", options.getCustomers());
+        model.addAttribute("adminLicenseGenerate", true);
+        model.addAttribute("licenseCustomerOptions", licenseFormService.buildLicenseCustomerOptionsForAdmin());
         if (!model.containsAttribute("form")) {
             LicenseGenerateForm form = new LicenseGenerateForm();
             form.setValidUntil(LocalDate.now().plusYears(1));

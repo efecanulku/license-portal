@@ -3,7 +3,7 @@
     <ul class="pagination pagination-sm justify-content-center mb-0">
         <li class="page-item" th:classappend="${page.first} ? 'disabled'">
             <a class="page-link"
-               th:href="@{${formAction}(status=${filter.status}, withinDays=${filter.withinDays}, page=${page.number - 1})}">Önceki</a>
+               th:href="|${formAction}?status=${filter.status}&withinDays=${filter.withinDays}&page=${page.number - 1}|">Önceki</a>
         </li>
         <li class="page-item disabled">
             <span class="page-link"
@@ -11,7 +11,7 @@
         </li>
         <li class="page-item" th:classappend="${page.last} ? 'disabled'">
             <a class="page-link"
-               th:href="@{${formAction}(status=${filter.status}, withinDays=${filter.withinDays}, page=${page.number + 1})}">Sonraki</a>
+               th:href="|${formAction}?status=${filter.status}&withinDays=${filter.withinDays}&page=${page.number + 1}|">Sonraki</a>
         </li>
     </ul>
 </nav>
