@@ -5,7 +5,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 public class LicenseListFilter {
-    public static final int PAGE_SIZE = 20;
+    /** Lisans satırları yüksek; tek sayfada az kayıt gösterilir. */
+    public static final int PAGE_SIZE = 10;
 
     private Long dealerId;
     private Long productId;
